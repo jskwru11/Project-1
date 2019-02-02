@@ -11,7 +11,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.8.1/firebase.js"></script>
     <script src="assets/js/app.js"></script>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPchfMQ9Do2TWSFQTKjKJlitT5y_Fdrdc&callback=initMap">
     </script>
     <style>
@@ -25,6 +25,89 @@
 </head>
 
 <body>
+
+            <!-- Set up first header centered -->
+            <!-- Setup login in button using a knife and fork icon -->
+            <h1>Night Out On The Town</h1>
+                <!-- <button class="btn btn-primary"><strong>Log In</strong></button> -->
+        
+        <!-- Attempt to load spinner login button... will need some work -->
+        <div> <center><img src="./assets/images/knifenfork.png" alt="BarPic" style="width:12%;"></center>
+            <!-- <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div> -->
+        </div><br>
+            <!-- Place resturant pic to cover page of advertisement -->
+            </div>
+        <div id="container image">
+                <img src="./assets/images/bar.jpg" alt="BarPic" style="width:100%"> 
+                </div>   
+            </div><br>
+            <!-- Place nav bar for free for all possible spot for a countdown timer, only if we have the time.-->
+        <div class="pos-f-t">
+            <div class="collapse" id="navbarToggleExternalContent">
+                <div class="bg-dark p-4">
+                <h5 class="text-white h4">Collapsed content</h5>
+                <span class="text-muted">Toggleable via the navbar brand.</span>
+                </div>
+            </div>
+        <nav class="navbar navbar-dark bg-dark">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+        </nav>
+            <!-- Add an addition nav bar for possible use. In addition to added a line separators on the top and bottom to separate each block of information-->
+            <hr>
+        <form>
+            <div class="form-group row">
+                <label for="inputFood" class="col-sm-2 col-form-label">Type In Food Choice:</label>
+                <div class="col-sm-10">
+                <input type="food" class="form-control" id="inputFood">
+                </div>
+            </div>
+        <form>
+            <div class="form-group row">
+                <label for="inputTime" class="col-sm-2 col-form-label">Time:</label>
+                <div class="col-sm-10">
+                <input type="time" class="form-control" id="inputTime">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-10 offset-sm-2">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        
+            <!-- Inserted cards for various possible use topped off with a pic on the top end. However, can be used for other purposes. Just placed to give a visual layout.-->
+            <hr>
+            </div> 
+            <div class="card-deck">
+            <div class="card">
+                <img src="./assets/images/resturant1.png" class="card-img-top" alt="...">
+                <div class="card-body">
+                <h5 class="card-title">Price Range</h5>
+                <p class="card-text">As state, this can be the holder of the various price ranges for an evening out.</p>
+                        </div>
+            </div>
+            <div class="card">
+                <img src="./assets/images/restaurant2.jpg" class="card-img-top" alt="...">
+                <div class="card-body">
+                <h5 class="card-title">Placed Visited</h5>
+                <p class="card-text">This space could hold the history of places visited.</p>
+                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="./assets/images/googlemapicon.png" class="card-img-top" alt="...">
+                <div class="card-body">
+                <h5 class="card-title">Google Maps</h5>
+                <p class="card-text">This is space is design for Google Maps hosting.</p>
+                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                </div>
+            </div>
+            </div> 
+        
+
     <div id="map"></div>
 </body>
 
