@@ -1,5 +1,6 @@
 $(document).ready(function () {
     // Initialize Firebase
+    //#region - firebase authentication
     var config = {
         apiKey: "AIzaSyDJjHXFsfWA5UNS_7-aWWB0IUt7pTEXr7E",
         authDomain: "dsm-group-project-1.firebaseapp.com",
@@ -10,6 +11,7 @@ $(document).ready(function () {
     };
     firebase.initializeApp(config);
     var database = firebase.database();
+    //#endregion
 
     //#region - geolocation
     var userLatitude;
@@ -62,6 +64,7 @@ $(document).ready(function () {
     }
     //#endregion
 
+    //#region - markers
     function placeMarker(theLatLong, title) {
         var marker = new google.maps.Marker({
             position: theLatLong,
@@ -69,5 +72,25 @@ $(document).ready(function () {
             title: title
         });
     }
-    console.log("v1");
+    //#endregion
+
+    //#region - yelp
+    function yelpAPICall(restaurantType, requestedTime) {
+        var settings = {
+            "url": "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?term=" + restaurantType + "&latitude=" + userLatitude + "&longitude=" + userLongitude,
+            "method": "GET",
+            "timeout": 0,
+            "headers": {
+                "Authorization": "Bearer mLgzYdES6ZMGJESWIiT0bSE_fjoQq1-1TqsNNHRyEm3yGWahTdS7oelkMQ0kiZ_WMiE7Ggepj6UkfjwHSwxyDCdGZ4aPPLGul4l5r6FaFzi9a57QZZ4SX-OBfEBUXHYx"
+            },
+        };
+        $.ajax(settings).done(function (response) {
+            console.log(response);
+        });
+    }
+
+    yelpAPICall("Italian".toLowerCase());
+    //#endregion
+
+    console.log("v1.1");
 });
