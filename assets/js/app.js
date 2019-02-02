@@ -1,5 +1,6 @@
 $(document).ready(function () {
     // Initialize Firebase
+    //#region - firebase authentication
     var config = {
         apiKey: "AIzaSyDJjHXFsfWA5UNS_7-aWWB0IUt7pTEXr7E",
         authDomain: "dsm-group-project-1.firebaseapp.com",
@@ -10,6 +11,7 @@ $(document).ready(function () {
     };
     firebase.initializeApp(config);
     var database = firebase.database();
+    //#endregion
 
     //#region - geolocation
     var userLatitude;
@@ -62,6 +64,7 @@ $(document).ready(function () {
     }
     //#endregion
 
+    //#region - markers
     function placeMarker(theLatLong, title) {
         var marker = new google.maps.Marker({
             position: theLatLong,
@@ -69,5 +72,6 @@ $(document).ready(function () {
             title: title
         });
     }
+    //#endregion
     console.log("v1");
 });
