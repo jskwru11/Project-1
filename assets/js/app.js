@@ -30,7 +30,7 @@ $(document).ready(function () {
             console.log(todaysDate, currentTime, userLatitude, userLongitude);
 
         } else {
-            geolocationStatusField.text("Geolocation is not supported by this browser");
+            console.log("Geolocation is not supported by this browser");
         }
     }
 
@@ -56,7 +56,7 @@ $(document).ready(function () {
                 center: userLatLong
             });
             placeMarker(userLatLong, "You are here");
-            geolocationStatusField.text("Latitude: " + userLatitude + ", Longitude: " + userLongitude);
+            console.log("Latitude: " + userLatitude + ", Longitude: " + userLongitude);
 
         }, 500);
     }
