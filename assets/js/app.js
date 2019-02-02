@@ -20,6 +20,7 @@ $(document).ready(function () {
     var mapDisplayField = $("#map");
 
     function getLocation() {
+        console.log("get location");
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
             let todaysDate = new Date().toLocaleDateString("en-US");
@@ -35,9 +36,6 @@ $(document).ready(function () {
             console.log("Geolocation is not supported by this browser");
         }
     }
-
-    getLocation();
-    setInterval(function () { getLocation(); }, 300000);
 
     function showPosition(position) {
         userLatitude = parseFloat(position.coords.latitude);
@@ -59,7 +57,6 @@ $(document).ready(function () {
             });
             placeMarker(userLatLong, "You are here");
             console.log("Latitude: " + userLatitude + ", Longitude: " + userLongitude);
-
         }, 500);
     }
     //#endregion
@@ -72,6 +69,64 @@ $(document).ready(function () {
             title: title
         });
     }
+    //#endregion
+
+    //#region - firebase listeners
+    var userIdentificationPath;
+    var userCoordinatesPath;
+    var userPreferencesPath;
+    var connectionsRef = database.ref("/connections");
+    var connectedRef = database.ref(".info/connected");
+
+    connectedRef.on("value", function (connectedSnapshot) {
+        if (connectedSnapshot.val()) {
+            var theConnection = connectionsRef.push(true);
+            theConnection.onDisconnect().remove();
+        };
+    });
+    connectionsRef.on("value", function (connectionsSnapshot) {
+        console.log("number online: " + connectionsSnapshot.numChildren());
+        console.log(connectionsSnapshot.child("connections").child(0).val());
+    }); // Number of online users is the number of objects in the presence list.
+
+    function testDataBaseWrite() {
+        let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        database.ref("new").set({
+            dateTime: currentTime,
+            currentLat: "latitude",
+            currentLong: "longitude",
+        });
+    };
+    testDataBaseWrite()
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        console.log("inside auth state changed");
+        console.table(user);
+        if (user) {
+            console.log("inside if user");
+            console.log("auth state changed: " + user.uid);
+            userID = user.uid;
+            console.log(userID);
+            // User is signed in.
+            userSignedIn = true;
+            userIdentificationPath = "users/" + userID + "/identification";
+            userCoordinatesPath = "users/" + userID + "/coordinates";
+            userPreferencesPath = "users/" + userID + "/preferences";
+        };
+        getLocation();
+    });
+
+    database.ref(userPreferencesPath).on("value", function (snapshot) {
+        console.log("user preferences path value change");
+        console.table(snapshot);
+        let theMessageDateTime = snapshot.child(userPreferencesPath).val();
+        let theMessageUserName = snapshot.child(userPreferencesPath).val();
+        console.log("the message date time: " + theMessageDateTime);
+        console.log("the message user time: " + theMessageUserName);
+
+    }, function (errorObject) {
+        console.log("entries-error: " + errorObject.code);
+    });
     //#endregion
 
     //#region - yelp
