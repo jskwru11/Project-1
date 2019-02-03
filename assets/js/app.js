@@ -111,6 +111,7 @@ $(document).ready(function () {
     });
 
     database.ref(userCoordinatesPath).on("value", function (snapshot) {
+        console.log
         console.log("user coordinates path value change " + userCoordinatesPath, userID);
         let theCurrentLat = snapshot.child(userCoordinatesPath + "/currentLat").val();
         let theCurrentLong = snapshot.child(userCoordinatesPath + "/currentLong").val();
@@ -124,6 +125,15 @@ $(document).ready(function () {
         let theRestaurantType = snapshot.child(userPreferencesPath + "/restaurantType").val();
         let theRequestedTime = snapshot.child(userPreferencesPath + "/requestedTime").val();
         console.log("from firebase: " + theRestaurantType, theRequestedTime);
+        theRequestedTime = moment(theRequestedTime, "M/D/YYYY hh:mm a").format("X");
+        console.log(theRequestedTime);
+        
+        if(userLatitude){
+        yelpAPICall(theRestaurantType, theRequestedTime);
+        }
+        else{
+            return false;
+        }
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
@@ -131,8 +141,9 @@ $(document).ready(function () {
 
     //#region - yelp
     function yelpAPICall(restaurantType, requestedTime) {
+        console.log(userLatitude + userLongitude);
         var settings = {
-            "url": "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?term=" + restaurantType + "&latitude=" + userLatitude + "&longitude=" + userLongitude,
+            "url": "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?term=" + restaurantType + "&latitude=" + userLatitude + "&longitude=" + userLongitude + "&open_at=" + requestedTime + "&limit=10",
             "method": "GET",
             "timeout": 0,
             "headers": {
@@ -141,10 +152,29 @@ $(document).ready(function () {
         };
         $.ajax(settings).done(function (response) {
             console.log(response);
+            console.log(response.businesses)
+            addRestaurants(response.businesses)
         });
     }
 
-    yelpAPICall("Italian".toLowerCase());
+    function addRestaurants(restaurtArray){
+        for(var i = 0; i < restaurtArray.length; i++){
+            var restaurant = restaurtArray[i];
+            var newImage = $("<image src=" + restaurant.image_url+ ">");
+            newImage.addClass("restaurant-pic");
+            var newRow = $("<tr>");
+            newRow.attr("data-longitude", restaurant.coordinates.longitude);
+            newRow.attr("data-latitude", restaurant.coordinates.latitude);
+            var nameColumn = $("<td>").text(restaurant.name);
+            var descriptionColumn = $("<td>").text(restaurant.rating);
+            var priceColumn = $("<td>").text(restaurant.price);
+            var imageColumn = $("<td>").html(newImage);
+            newRow.append(imageColumn, nameColumn, descriptionColumn, priceColumn);
+            $("#restaurant-table").append(newRow);
+        }
+    }
+
+
     //#endregion
 
     console.log("v1.2"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
