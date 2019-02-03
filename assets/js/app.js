@@ -1,5 +1,4 @@
 $(document).ready(function () {
-    // Initialize Firebase
     //#region - firebase authentication
     var config = {
         apiKey: "AIzaSyDJjHXFsfWA5UNS_7-aWWB0IUt7pTEXr7E",
@@ -22,28 +21,15 @@ $(document).ready(function () {
     function getLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
-            let todaysDate = new Date().toLocaleDateString("en-US");
-            let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            database.ref().set({
-                dateTime: todaysDate + " " + currentTime,
-                currentLat: userLatitude,
-                currentLong: userLongitude,
-            });
-            console.log(todaysDate, currentTime, userLatitude, userLongitude);
-
         } else {
             console.log("Geolocation is not supported by this browser");
         }
     }
 
-    getLocation();
-    setInterval(function () { getLocation(); }, 300000);
-
     function showPosition(position) {
         userLatitude = parseFloat(position.coords.latitude);
         userLongitude = parseFloat(position.coords.longitude);
         if (initMapLatLong != userLatitude, userLongitude) {
-            console.log("redoing initMap: " + initMapLatLong + " / " + userLatitude, userLongitude);
             initMap();
         }
     }
@@ -58,8 +44,20 @@ $(document).ready(function () {
                 center: userLatLong
             });
             placeMarker(userLatLong, "You are here");
-            console.log("Latitude: " + userLatitude + ", Longitude: " + userLongitude);
-
+            let todaysDate = new Date().toLocaleDateString("en-US");
+            let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            database.ref(userCoordinatesPath).set({
+                dateTime: todaysDate + " " + currentTime,
+                currentLat: userLatitude,
+                currentLong: userLongitude,
+            });
+            // SAMPLE DATA FOR TESTING! REMOVE FOR PRODUCTION!
+            let restaurantType = "italian";
+            let requestedTime = todaysDate + " " + currentTime
+            database.ref(userPreferencesPath).set({
+                restaurantType: restaurantType,
+                requestedTime: requestedTime,
+            });
         }, 500);
     }
     //#endregion
@@ -72,6 +70,63 @@ $(document).ready(function () {
             title: title
         });
     }
+    //#endregion
+
+    //#region - firebase listeners
+    var userIdentificationPath;
+    var userCoordinatesPath;
+    var userPreferencesPath;
+    var connectionsRef = database.ref("/connections");
+    var connectedRef = database.ref(".info/connected");
+
+    connectedRef.on("value", function (connectedSnapshot) {
+        if (connectedSnapshot.val()) {
+            var theConnection = connectionsRef.push(true);
+            theConnection.onDisconnect().remove();
+        };
+    });
+
+    connectionsRef.on("value", function (connectionsSnapshot) {
+        console.log("number online: " + connectionsSnapshot.numChildren());
+    }); // Number of online users is the number of objects in the presence list.
+
+    firebase.auth().signInAnonymously().catch(function (error) {
+        let errorCode = error.code;
+        let errorMessage = error.message;
+        console.log("anonymous login error: " + errorCode, errorMessage);
+        // ...
+    });
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            console.log("auth state changed: " + user.uid);
+            userID = user.uid;
+            // User is signed in.
+            userSignedIn = true;
+            userIdentificationPath = "users/" + userID + "/identification";
+            userCoordinatesPath = "users/" + userID + "/coordinates";
+            userPreferencesPath = "users/" + userID + "/preferences";
+        };
+        getLocation();
+    });
+
+    database.ref(userCoordinatesPath).on("value", function (snapshot) {
+        console.log("user coordinates path value change " + userCoordinatesPath, userID);
+        let theCurrentLat = snapshot.child(userCoordinatesPath + "/currentLat").val();
+        let theCurrentLong = snapshot.child(userCoordinatesPath + "/currentLong").val();
+        console.log("from firebase: " + theCurrentLat, theCurrentLong);
+    }, function (errorObject) {
+        console.log("entries-error: " + errorObject.code);
+    });
+
+    database.ref(userPreferencesPath).on("value", function (snapshot) {
+        console.log("user preferences path value change " + userPreferencesPath, userID);
+        let theRestaurantType = snapshot.child(userPreferencesPath + "/restaurantType").val();
+        let theRequestedTime = snapshot.child(userPreferencesPath + "/requestedTime").val();
+        console.log("from firebase: " + theRestaurantType, theRequestedTime);
+    }, function (errorObject) {
+        console.log("entries-error: " + errorObject.code);
+    });
     //#endregion
 
     //#region - yelp
@@ -92,5 +147,5 @@ $(document).ready(function () {
     yelpAPICall("Italian".toLowerCase());
     //#endregion
 
-    console.log("v1.1");
+    console.log("v1.2"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 });
