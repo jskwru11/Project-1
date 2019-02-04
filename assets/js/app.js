@@ -226,7 +226,8 @@ $(document).ready(function () {
         console.log(theRequestedTime);
         
         if(userLatitude){
-        yelpAPICall(theRestaurantType, theRequestedTime);
+
+            yelpAPICall(theRestaurantType, theRequestedTime);
         }
         else{
             return false;
