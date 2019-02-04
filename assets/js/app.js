@@ -73,6 +73,7 @@ $(document).ready(function () {
     $("#restaurant-form").on("submit", function(event){
         event.preventDefault();
         gotRestaurantData = false;
+        $("#restaurant-table").empty();
         var restaurantSelection = $("#inputFood").val().trim();
         var selectedTime = $("#inputTime").val().trim();
         console.log("restaurant" + restaurantSelection);
@@ -83,8 +84,8 @@ $(document).ready(function () {
                 restaurantType: restaurantSelection,
                 requestedTime: theSelectedTime,
             });
-        $("#inputFood").text("");
-        $("#inputTime").text("");
+        $("#inputFood").val("");
+        $("#inputTime").val("");
 
         
     });
