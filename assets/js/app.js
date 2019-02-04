@@ -17,6 +17,7 @@ $(document).ready(function () {
     var userLongitude;
     var initMapLatLong;
     var mapDisplayField = $("#map");
+    var gotRestaurantData = false;
 
     function getLocation() {
         if (navigator.geolocation) {
@@ -116,6 +117,7 @@ $(document).ready(function () {
         let theCurrentLat = snapshot.child(userCoordinatesPath + "/currentLat").val();
         let theCurrentLong = snapshot.child(userCoordinatesPath + "/currentLong").val();
         console.log("from firebase: " + theCurrentLat, theCurrentLong);
+        
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
@@ -127,13 +129,12 @@ $(document).ready(function () {
         console.log("from firebase: " + theRestaurantType, theRequestedTime);
         theRequestedTime = moment(theRequestedTime, "M/D/YYYY hh:mm a").format("X");
         console.log(theRequestedTime);
-        
         if(userLatitude){
-        yelpAPICall(theRestaurantType, theRequestedTime);
-        }
-        else{
-            return false;
-        }
+            yelpAPICall(theRestaurantType, theRequestedTime);
+            }
+            else{
+                return false;
+            }
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
@@ -141,7 +142,9 @@ $(document).ready(function () {
 
     //#region - yelp
     function yelpAPICall(restaurantType, requestedTime) {
+        
         console.log(userLatitude + userLongitude);
+        if(!gotRestaurantData){
         var settings = {
             "url": "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?term=" + restaurantType + "&latitude=" + userLatitude + "&longitude=" + userLongitude + "&open_at=" + requestedTime + "&limit=10",
             "method": "GET",
@@ -153,8 +156,13 @@ $(document).ready(function () {
         $.ajax(settings).done(function (response) {
             console.log(response);
             console.log(response.businesses)
+            gotRestaurantData = true;
             addRestaurants(response.businesses)
         });
+        }
+        else{
+            return false;
+        }
     }
 
     function addRestaurants(restaurtArray){
