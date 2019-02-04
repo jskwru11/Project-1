@@ -17,6 +17,9 @@ $(document).ready(function () {
     var userLongitude;
     var initMapLatLong;
     var mapDisplayField = $("#map");
+    var gotRestaurantData = true;
+    
+
 
     function getLocation() {
         if (navigator.geolocation) {
@@ -33,7 +36,7 @@ $(document).ready(function () {
             initMap();
         }
     }
-
+    
     function initMap() {
         setTimeout(function () {
             console.log("init map: " + userLatitude, userLongitude);
@@ -52,12 +55,8 @@ $(document).ready(function () {
                 currentLong: userLongitude,
             });
             // SAMPLE DATA FOR TESTING! REMOVE FOR PRODUCTION!
-            let restaurantType = "italian";
-            let requestedTime = todaysDate + " " + currentTime
-            database.ref(userPreferencesPath).set({
-                restaurantType: restaurantType,
-                requestedTime: requestedTime,
-            });
+            // let restaurantType = "italian";
+            // let requestedTime = todaysDate + " " + currentTime
         }, 500);
     }
     //#endregion
@@ -72,6 +71,31 @@ $(document).ready(function () {
     }
     //#endregion
 
+    //on-submit event for restaurant form, also adds this info the firebase database,
+    $("#restaurant-form").on("submit", function(event){
+        event.preventDefault();
+        gotRestaurantData = false;
+        //clear previous results
+        $("#restaurant-table").empty();
+        //get current parameters
+        var restaurantSelection = $("#inputFood").val().trim();
+        var selectedTime = $("#inputTime").val().trim();
+        console.log("restaurant" + restaurantSelection);
+        console.log("time" + selectedTime);
+        //format time for UNIX conversion
+        let todaysDate = new Date().toLocaleDateString("en-US");
+        var theSelectedTime = todaysDate + " " + selectedTime;
+        //add seach parameters to firebase database
+        database.ref(userPreferencesPath).set({
+                restaurantType: restaurantSelection,
+                requestedTime: theSelectedTime,
+            });
+        //clear the form
+        $("#inputFood").val("");
+        $("#inputTime").val("");
+
+        
+    });
     //#region - firebase listeners
     var userIdentificationPath;
     var userCoordinatesPath;
@@ -79,6 +103,7 @@ $(document).ready(function () {
     var connectionsRef = database.ref("/connections");
     var connectedRef = database.ref(".info/connected");
 
+    
     connectedRef.on("value", function (connectedSnapshot) {
         if (connectedSnapshot.val()) {
             var theConnection = connectionsRef.push(true);
@@ -111,10 +136,12 @@ $(document).ready(function () {
     });
 
     database.ref(userCoordinatesPath).on("value", function (snapshot) {
+        console.log
         console.log("user coordinates path value change " + userCoordinatesPath, userID);
         let theCurrentLat = snapshot.child(userCoordinatesPath + "/currentLat").val();
         let theCurrentLong = snapshot.child(userCoordinatesPath + "/currentLong").val();
         console.log("from firebase: " + theCurrentLat, theCurrentLong);
+        
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
@@ -124,6 +151,11 @@ $(document).ready(function () {
         let theRestaurantType = snapshot.child(userPreferencesPath + "/restaurantType").val();
         let theRequestedTime = snapshot.child(userPreferencesPath + "/requestedTime").val();
         console.log("from firebase: " + theRestaurantType, theRequestedTime);
+        theRequestedTime = moment(theRequestedTime, "M/D/YYYY HH:mm ").format("X");
+        console.log(theRequestedTime);
+        if(!gotRestaurantData && userLatitude){   
+            yelpAPICall(theRestaurantType, theRequestedTime);
+        }
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
@@ -131,8 +163,11 @@ $(document).ready(function () {
 
     //#region - yelp
     function yelpAPICall(restaurantType, requestedTime) {
+        
+        console.log(userLatitude + userLongitude);
+        gotRestaurantData = true;
         var settings = {
-            "url": "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?term=" + restaurantType + "&latitude=" + userLatitude + "&longitude=" + userLongitude,
+            "url": "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?term=" + restaurantType + "&latitude=" + userLatitude + "&longitude=" + userLongitude + "&open_at=" + requestedTime + "&limit=10",
             "method": "GET",
             "timeout": 0,
             "headers": {
@@ -141,10 +176,33 @@ $(document).ready(function () {
         };
         $.ajax(settings).done(function (response) {
             console.log(response);
+            console.log(response.businesses)
+            gotRestaurantData = true;
+            addRestaurants(response.businesses)
         });
+        
+    
     }
 
-    yelpAPICall("Italian".toLowerCase());
+    function addRestaurants(restaurtArray){
+        for(var i = 0; i < restaurtArray.length; i++){
+            var restaurant = restaurtArray[i];
+            var newImage = $("<image src=" + restaurant.image_url+ ">");
+            newImage.addClass("restaurant-pic");
+            var newRow = $("<tr>");
+            newRow.attr("data-longitude", restaurant.coordinates.longitude);
+            newRow.attr("data-latitude", restaurant.coordinates.latitude);
+            newRow.addClass("restaurant-row");
+            var nameColumn = $("<td>").text(restaurant.name);
+            var descriptionColumn = $("<td>").text(restaurant.rating);
+            var priceColumn = $("<td>").text(restaurant.price);
+            var imageColumn = $("<td>").html(newImage);
+            newRow.append(imageColumn, nameColumn, descriptionColumn, priceColumn);
+            $("#restaurant-table").append(newRow);
+        }
+    }
+
+
     //#endregion
 
     console.log("v1.2"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
