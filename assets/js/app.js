@@ -17,7 +17,9 @@ $(document).ready(function () {
     var userLongitude;
     var initMapLatLong;
     var mapDisplayField = $("#map");
-    var gotRestaurantData = false;
+    var gotRestaurantData = true;
+    
+
 
     function getLocation() {
         if (navigator.geolocation) {
@@ -34,7 +36,7 @@ $(document).ready(function () {
             initMap();
         }
     }
-
+    
     function initMap() {
         setTimeout(function () {
             console.log("init map: " + userLatitude, userLongitude);
@@ -53,12 +55,8 @@ $(document).ready(function () {
                 currentLong: userLongitude,
             });
             // SAMPLE DATA FOR TESTING! REMOVE FOR PRODUCTION!
-            let restaurantType = "italian";
-            let requestedTime = todaysDate + " " + currentTime
-            database.ref(userPreferencesPath).set({
-                restaurantType: restaurantType,
-                requestedTime: requestedTime,
-            });
+            // let restaurantType = "italian";
+            // let requestedTime = todaysDate + " " + currentTime
         }, 500);
     }
     //#endregion
@@ -72,7 +70,24 @@ $(document).ready(function () {
         });
     }
     //#endregion
+    $("#restaurant-form").on("submit", function(event){
+        event.preventDefault();
+        gotRestaurantData = false;
+        var restaurantSelection = $("#inputFood").val().trim();
+        var selectedTime = $("#inputTime").val().trim();
+        console.log("restaurant" + restaurantSelection);
+        console.log("time" + selectedTime);
+        let todaysDate = new Date().toLocaleDateString("en-US");
+        var theSelectedTime = todaysDate + " " + selectedTime;
+            database.ref(userPreferencesPath).set({
+                restaurantType: restaurantSelection,
+                requestedTime: theSelectedTime,
+            });
+        $("#inputFood").text("");
+        $("#inputTime").text("");
 
+        
+    });
     //#region - firebase listeners
     var userIdentificationPath;
     var userCoordinatesPath;
@@ -80,6 +95,7 @@ $(document).ready(function () {
     var connectionsRef = database.ref("/connections");
     var connectedRef = database.ref(".info/connected");
 
+    
     connectedRef.on("value", function (connectedSnapshot) {
         if (connectedSnapshot.val()) {
             var theConnection = connectionsRef.push(true);
@@ -127,14 +143,11 @@ $(document).ready(function () {
         let theRestaurantType = snapshot.child(userPreferencesPath + "/restaurantType").val();
         let theRequestedTime = snapshot.child(userPreferencesPath + "/requestedTime").val();
         console.log("from firebase: " + theRestaurantType, theRequestedTime);
-        theRequestedTime = moment(theRequestedTime, "M/D/YYYY hh:mm a").format("X");
+        theRequestedTime = moment(theRequestedTime, "M/D/YYYY HH:mm ").format("X");
         console.log(theRequestedTime);
-        if(userLatitude){
+        if(!gotRestaurantData && userLatitude){   
             yelpAPICall(theRestaurantType, theRequestedTime);
-            }
-            else{
-                return false;
-            }
+        }
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
@@ -144,7 +157,7 @@ $(document).ready(function () {
     function yelpAPICall(restaurantType, requestedTime) {
         
         console.log(userLatitude + userLongitude);
-        if(!gotRestaurantData){
+        gotRestaurantData = true;
         var settings = {
             "url": "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?term=" + restaurantType + "&latitude=" + userLatitude + "&longitude=" + userLongitude + "&open_at=" + requestedTime + "&limit=10",
             "method": "GET",
@@ -159,10 +172,8 @@ $(document).ready(function () {
             gotRestaurantData = true;
             addRestaurants(response.businesses)
         });
-        }
-        else{
-            return false;
-        }
+        
+    
     }
 
     function addRestaurants(restaurtArray){
@@ -173,6 +184,7 @@ $(document).ready(function () {
             var newRow = $("<tr>");
             newRow.attr("data-longitude", restaurant.coordinates.longitude);
             newRow.attr("data-latitude", restaurant.coordinates.latitude);
+            newRow.addClass("restaurant-row");
             var nameColumn = $("<td>").text(restaurant.name);
             var descriptionColumn = $("<td>").text(restaurant.rating);
             var priceColumn = $("<td>").text(restaurant.price);
