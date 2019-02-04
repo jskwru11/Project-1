@@ -70,20 +70,27 @@ $(document).ready(function () {
         });
     }
     //#endregion
+
+    //on-submit event for restaurant form, also adds this info the firebase database,
     $("#restaurant-form").on("submit", function(event){
         event.preventDefault();
         gotRestaurantData = false;
+        //clear previous results
         $("#restaurant-table").empty();
+        //get current parameters
         var restaurantSelection = $("#inputFood").val().trim();
         var selectedTime = $("#inputTime").val().trim();
         console.log("restaurant" + restaurantSelection);
         console.log("time" + selectedTime);
+        //format time for UNIX conversion
         let todaysDate = new Date().toLocaleDateString("en-US");
         var theSelectedTime = todaysDate + " " + selectedTime;
-            database.ref(userPreferencesPath).set({
+        //add seach parameters to firebase database
+        database.ref(userPreferencesPath).set({
                 restaurantType: restaurantSelection,
                 requestedTime: theSelectedTime,
             });
+        //clear the form
         $("#inputFood").val("");
         $("#inputTime").val("");
 
