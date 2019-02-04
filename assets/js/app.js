@@ -114,6 +114,9 @@ $(document).ready(function () {
     var userLongitude;
     var initMapLatLong;
     var mapDisplayField = $("#map");
+    var gotRestaurantData = true;
+    
+
 
     function getLocation() {
         if (navigator.geolocation) {
@@ -130,7 +133,7 @@ $(document).ready(function () {
             initMap();
         }
     }
-
+    
     function initMap() {
         setTimeout(function () {
             console.log("init map: " + userLatitude, userLongitude);
@@ -149,12 +152,17 @@ $(document).ready(function () {
                 currentLong: userLongitude,
             });
             // SAMPLE DATA FOR TESTING! REMOVE FOR PRODUCTION!
+<<<<<<< HEAD
             let restaurantType = "italian";
             let requestedTime = todaysDate + " " + currentTime
             database.ref(userPreferencesPath).set({
                 restaurantType: restaurantType,
                 requestedTime: requestedTime,
             });
+=======
+            // let restaurantType = "italian";
+            // let requestedTime = todaysDate + " " + currentTime
+>>>>>>> 08ca5cd03764391aaecd60bf4d303a20c0902875
         }, 500);
     }
     //#endregion
@@ -169,6 +177,34 @@ $(document).ready(function () {
     }
     //#endregion
 
+<<<<<<< HEAD
+=======
+    //on-submit event for restaurant form, also adds this info the firebase database,
+    $("#restaurant-form").on("submit", function(event){
+        event.preventDefault();
+        gotRestaurantData = false;
+        //clear previous results
+        $("#restaurant-table").empty();
+        //get current parameters
+        var restaurantSelection = $("#inputFood").val().trim();
+        var selectedTime = $("#inputTime").val().trim();
+        console.log("restaurant" + restaurantSelection);
+        console.log("time" + selectedTime);
+        //format time for UNIX conversion
+        let todaysDate = new Date().toLocaleDateString("en-US");
+        var theSelectedTime = todaysDate + " " + selectedTime;
+        //add seach parameters to firebase database
+        database.ref(userPreferencesPath).set({
+                restaurantType: restaurantSelection,
+                requestedTime: theSelectedTime,
+            });
+        //clear the form
+        $("#inputFood").val("");
+        $("#inputTime").val("");
+
+        
+    });
+>>>>>>> 08ca5cd03764391aaecd60bf4d303a20c0902875
     //#region - firebase listeners
     var userIdentificationPath;
     var userCoordinatesPath;
@@ -176,6 +212,10 @@ $(document).ready(function () {
     var connectionsRef = database.ref("/connections");
     var connectedRef = database.ref(".info/connected");
 
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 08ca5cd03764391aaecd60bf4d303a20c0902875
     connectedRef.on("value", function (connectedSnapshot) {
         if (connectedSnapshot.val()) {
             var theConnection = connectionsRef.push(true);
@@ -213,6 +253,10 @@ $(document).ready(function () {
         let theCurrentLat = snapshot.child(userCoordinatesPath + "/currentLat").val();
         let theCurrentLong = snapshot.child(userCoordinatesPath + "/currentLong").val();
         console.log("from firebase: " + theCurrentLat, theCurrentLong);
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 08ca5cd03764391aaecd60bf4d303a20c0902875
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
@@ -222,6 +266,7 @@ $(document).ready(function () {
         let theRestaurantType = snapshot.child(userPreferencesPath + "/restaurantType").val();
         let theRequestedTime = snapshot.child(userPreferencesPath + "/requestedTime").val();
         console.log("from firebase: " + theRestaurantType, theRequestedTime);
+<<<<<<< HEAD
         theRequestedTime = moment(theRequestedTime, "M/D/YYYY hh:mm a").format("X");
         console.log(theRequestedTime);
         
@@ -232,6 +277,13 @@ $(document).ready(function () {
         else{
             return false;
         }
+=======
+        theRequestedTime = moment(theRequestedTime, "M/D/YYYY HH:mm ").format("X");
+        console.log(theRequestedTime);
+        if(!gotRestaurantData && userLatitude){   
+            yelpAPICall(theRestaurantType, theRequestedTime);
+        }
+>>>>>>> 08ca5cd03764391aaecd60bf4d303a20c0902875
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
@@ -239,7 +291,13 @@ $(document).ready(function () {
 
     //#region - yelp
     function yelpAPICall(restaurantType, requestedTime) {
+<<<<<<< HEAD
         console.log(userLatitude + userLongitude);
+=======
+        
+        console.log(userLatitude + userLongitude);
+        gotRestaurantData = true;
+>>>>>>> 08ca5cd03764391aaecd60bf4d303a20c0902875
         var settings = {
             "url": "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?term=" + restaurantType + "&latitude=" + userLatitude + "&longitude=" + userLongitude + "&open_at=" + requestedTime + "&limit=10",
             "method": "GET",
@@ -251,8 +309,14 @@ $(document).ready(function () {
         $.ajax(settings).done(function (response) {
             console.log(response);
             console.log(response.businesses)
+<<<<<<< HEAD
+=======
+            gotRestaurantData = true;
+>>>>>>> 08ca5cd03764391aaecd60bf4d303a20c0902875
             addRestaurants(response.businesses)
         });
+        
+    
     }
 
     function addRestaurants(restaurtArray){
@@ -263,6 +327,10 @@ $(document).ready(function () {
             var newRow = $("<tr>");
             newRow.attr("data-longitude", restaurant.coordinates.longitude);
             newRow.attr("data-latitude", restaurant.coordinates.latitude);
+<<<<<<< HEAD
+=======
+            newRow.addClass("restaurant-row");
+>>>>>>> 08ca5cd03764391aaecd60bf4d303a20c0902875
             var nameColumn = $("<td>").text(restaurant.name);
             var descriptionColumn = $("<td>").text(restaurant.rating);
             var priceColumn = $("<td>").text(restaurant.price);
@@ -276,4 +344,8 @@ $(document).ready(function () {
     //#endregion
 
     console.log("v1.2"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> 08ca5cd03764391aaecd60bf4d303a20c0902875
