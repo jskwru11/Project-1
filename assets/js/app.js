@@ -184,6 +184,7 @@ $(document).ready(function () {
         //clear the form
         $("#inputFood").val("");
         $("#inputTime").val("");
+        $("#myModal").modal('toggle');
     });
     //dd-branch
     //on-click event for restaurant selection 
