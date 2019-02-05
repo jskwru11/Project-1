@@ -96,10 +96,25 @@ $(document).ready(function () {
 
         
     });
+
+    //on-click event for restaurant selection 
+    $(document).on("click", ".restaurant-row", function(){
+        console.log("i've been clicked");
+        var restaurantLongitude = $(this).attr("data-longitude");
+        var restaurantLatitude = $(this).attr("data-latitude");
+        console.log("Longitude: " + restaurantLongitude);
+        console.log("Latitude: " + restaurantLatitude);
+        database.ref(userRestaurantPick).set({
+            restaurantLat: restaurantLatitude,
+            restaurantLong: restaurantLongitude
+        });
+    });
+    
     //#region - firebase listeners
     var userIdentificationPath;
     var userCoordinatesPath;
     var userPreferencesPath;
+    var userRestaurantPick;
     var connectionsRef = database.ref("/connections");
     var connectedRef = database.ref(".info/connected");
 
@@ -159,6 +174,10 @@ $(document).ready(function () {
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
+
+    database.ref(userRestaurantPick).on("value", function (snapshot){
+        console.log(snapshot.val());
+    });
     //#endregion
 
     //#region - yelp
@@ -205,5 +224,5 @@ $(document).ready(function () {
 
     //#endregion
 
-    console.log("v1.2"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+    console.log("v1.3"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 });
