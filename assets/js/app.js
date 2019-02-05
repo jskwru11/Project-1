@@ -104,9 +104,15 @@ $(document).ready(function () {
         var restaurantLatitude = $(this).attr("data-latitude");
         console.log("Longitude: " + restaurantLongitude);
         console.log("Latitude: " + restaurantLatitude);
+        var restaurantPic = $(this).find(".restaurant-pic").prop("src");
+        console.log("src: " + restaurantPic);
+        var restaurantName = $(this).children(".restaurant-name").text();
+        console.log("name: " + restaurantName);
         database.ref(userRestaurantPick).set({
             restaurantLat: restaurantLatitude,
-            restaurantLong: restaurantLongitude
+            restaurantLong: restaurantLongitude,
+            restaurantImg: restaurantPic,
+            name: restaurantName
         });
     });
     
@@ -206,13 +212,14 @@ $(document).ready(function () {
     function addRestaurants(restaurtArray){
         for(var i = 0; i < restaurtArray.length; i++){
             var restaurant = restaurtArray[i];
-            var newImage = $("<image src=" + restaurant.image_url+ ">");
+            var newImage = $("<img src=" + restaurant.image_url+ ">");
             newImage.addClass("restaurant-pic");
             var newRow = $("<tr>");
             newRow.attr("data-longitude", restaurant.coordinates.longitude);
             newRow.attr("data-latitude", restaurant.coordinates.latitude);
             newRow.addClass("restaurant-row");
             var nameColumn = $("<td>").text(restaurant.name);
+            nameColumn.addClass("restaurant-name");
             var descriptionColumn = $("<td>").text(restaurant.rating);
             var priceColumn = $("<td>").text(restaurant.price);
             var imageColumn = $("<td>").html(newImage);
