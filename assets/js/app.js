@@ -180,11 +180,30 @@ $(document).ready(function () {
         $("#inputFood").val("");
         $("#inputTime").val("");
     });
-
+ dd-branch
+    //on-click event for restaurant selection 
+    $(document).on("click", ".restaurant-row", function(){
+        console.log("i've been clicked");
+        var restaurantLongitude = $(this).attr("data-longitude");
+        var restaurantLatitude = $(this).attr("data-latitude");
+        console.log("Longitude: " + restaurantLongitude);
+        console.log("Latitude: " + restaurantLatitude);
+        var restaurantPic = $(this).find(".restaurant-pic").prop("src");
+        console.log("src: " + restaurantPic);
+        var restaurantName = $(this).children(".restaurant-name").text();
+        console.log("name: " + restaurantName);
+        database.ref(userRestaurantPick).set({
+            restaurantLat: restaurantLatitude,
+            restaurantLong: restaurantLongitude,
+            restaurantImg: restaurantPic,
+            name: restaurantName
+        });
+    });
     //#region - firebase listeners
     var userIdentificationPath;
     var userCoordinatesPath;
     var userPreferencesPath;
+    var userRestaurantPick;
     var connectionsRef = database.ref("/connections");
     var connectedRef = database.ref(".info/connected");
 
@@ -244,6 +263,10 @@ $(document).ready(function () {
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
+
+    database.ref(userRestaurantPick).on("value", function (snapshot){
+        console.log(snapshot.val());
+    });
     //#endregion
 
     //#region - yelp
@@ -283,13 +306,16 @@ $(document).ready(function () {
     function addRestaurants(restaurtArray) {//TODO: is this an intentional abbreviation?
         for (var i = 0; i < restaurtArray.length; i++) {
             var restaurant = restaurtArray[i];
-            var newImage = $("<image src=" + restaurant.image_url + ">");
+dd-branch
+            var newImage = $("<img src=" + restaurant.image_url+ ">");
+
             newImage.addClass("restaurant-pic");
             var newRow = $("<tr>");
             newRow.attr("data-longitude", restaurant.coordinates.longitude);
             newRow.attr("data-latitude", restaurant.coordinates.latitude);
             newRow.addClass("restaurant-row");
             var nameColumn = $("<td>").text(restaurant.name);
+            nameColumn.addClass("restaurant-name");
             var descriptionColumn = $("<td>").text(restaurant.rating);
             var priceColumn = $("<td>").text(restaurant.price);
             var imageColumn = $("<td>").html(newImage);
@@ -317,5 +343,5 @@ $(document).ready(function () {
     // ];
     // ---------------------------------------------------------------------------
 
-    console.log("v1.2"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+    console.log("v1.3"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 });
