@@ -18,8 +18,6 @@ $(document).ready(function () {
     var initMapLatLong;
     var mapDisplayField = $("#map");
     var gotRestaurantData = true;
-    
-
 
     function getLocation() {
         if (navigator.geolocation) {
@@ -36,17 +34,18 @@ $(document).ready(function () {
             initMap();
         }
     }
-    
+
     function initMap() {
         setTimeout(function () {
             console.log("init map: " + userLatitude, userLongitude);
             initMapLatLong = userLatitude, userLongitude;
-            var userLatLong = { lat: userLatitude, lng: userLongitude };
+            let userLatLong = { lat: userLatitude, lng: userLongitude };
+            let zoom = 16
             map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 16,
+                zoom: zoom,
                 center: userLatLong
             });
-            placeMarker(userLatLong, "You are here");
+            placeComplexMarker(userLatLong, "You are here", "user", "single");
             let todaysDate = new Date().toLocaleDateString("en-US");
             let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             database.ref(userCoordinatesPath).set({
@@ -54,25 +53,112 @@ $(document).ready(function () {
                 currentLat: userLatitude,
                 currentLong: userLongitude,
             });
-            // SAMPLE DATA FOR TESTING! REMOVE FOR PRODUCTION!
-            // let restaurantType = "italian";
-            // let requestedTime = todaysDate + " " + currentTime
         }, 500);
     }
     //#endregion
 
     //#region - markers
-    function placeMarker(theLatLong, title) {
+    var venues = [];
+    //see https://developers.google.com/maps/documentation/javascript/examples/icon-complex
+
+    // Origins, anchor positions and coordinates of the marker increase in the X
+    // direction to the right and in the Y direction down.
+    var imageRestaurant = {//TODO: one image for restaurants, another for movies
+        url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+        // This marker is 20 pixels wide by 32 pixels high.
+        size: new google.maps.Size(20, 32),
+        // The origin for this image is (0, 0).
+        origin: new google.maps.Point(0, 0),
+        // The anchor for this image is the base of the flagpole at (0, 32).
+        anchor: new google.maps.Point(0, 32)
+    };
+    var imageMovie = {//TODO: one image for restaurants, another for movies
+        url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+        // This marker is 20 pixels wide by 32 pixels high.
+        size: new google.maps.Size(20, 32),
+        // The origin for this image is (0, 0).
+        origin: new google.maps.Point(0, 0),
+        // The anchor for this image is the base of the flagpole at (0, 32).
+        anchor: new google.maps.Point(0, 32)
+    };
+
+    var imageUser = {//TODO: one image for restaurants, another for movies
+        url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+        // This marker is 20 pixels wide by 32 pixels high.
+        size: new google.maps.Size(20, 32),
+        // The origin for this image is (0, 0).
+        origin: new google.maps.Point(0, 0),
+        // The anchor for this image is the base of the flagpole at (0, 32).
+        anchor: new google.maps.Point(0, 32)
+    };
+
+    //TODO: SAMPLE DATA - this array will be constructed on the fly
+    //each time multiple markers need to be set down. the following is
+    //sample data and should be deleted for production.
+    venues = [
+        ["Cocina Desmond", 35.8296462, -79.1090949, 1],
+        ["Willie's BBQ", 35.83, -79.11, 1],
+    ];
+
+    function placeMarker(theLatLong, title) { //this is the simple version
+        //which we may not use
         var marker = new google.maps.Marker({
             position: theLatLong,
             map: map,
             title: title
         });
     }
+
+    function placeComplexMarker(theLatLong, title, restaurantOrMovie, singleOrMultiple) {//see https://developers.google.com/maps/documentation/javascript/examples/icon-complex
+        // Marker sizes are expressed as a Size of X,Y where the origin of the image
+        // (0,0) is located in the top left of the image.
+
+        // Shapes define the clickable region of the icon. The type defines an HTML
+        // <area> element 'poly' which traces out a polygon as a series of X,Y points.
+        // The final coordinate closes the poly by connecting to the first coordinate.
+        var shape = {//TODO: question - hard-wire a single shape? use no shape?
+            coords: [1, 1, 1, 20, 18, 20, 18, 1],
+            type: 'poly'
+        };
+
+        if (restaurantOrMovie = "restaurant") {
+            var image = imageRestaurant;
+        } else {
+            if (restaurantOrMovie = "movie") {
+                var image = imageMovie;
+            } else {//it's the user's location
+                var image = imageUser;
+            };
+        };
+
+        if (singleOrMultiple = "single") {//number of markers to place
+            var marker = new google.maps.Marker({
+                position: theLatLong,
+                map: map,
+                icon: image,
+                shape: shape,
+                title: title,
+                // zIndex: zindex //we may or may not want to use this
+            });
+        } else {
+            for (var i = 0; i < venues.length; i++) {//multiple needs a venues
+                //array, see sample data above
+                var venue = venues[i];
+                var marker = new google.maps.Marker({
+                    position: { lat: venue[1], lng: venue[2] },
+                    map: map,
+                    icon: image,
+                    shape: shape,
+                    title: venue[0],
+                    // zIndex: venue[3] //we may or may not want to use this
+                });
+            };
+        };
+    };
     //#endregion
 
     //on-submit event for restaurant form, also adds this info the firebase database,
-    $("#restaurant-form").on("submit", function(event){
+    $("#restaurant-form").on("submit", function (event) {
         event.preventDefault();
         gotRestaurantData = false;
         //clear previous results
@@ -87,15 +173,14 @@ $(document).ready(function () {
         var theSelectedTime = todaysDate + " " + selectedTime;
         //add seach parameters to firebase database
         database.ref(userPreferencesPath).set({
-                restaurantType: restaurantSelection,
-                requestedTime: theSelectedTime,
-            });
+            restaurantType: restaurantSelection,
+            requestedTime: theSelectedTime,
+        });
         //clear the form
         $("#inputFood").val("");
         $("#inputTime").val("");
-
-        
     });
+
     //#region - firebase listeners
     var userIdentificationPath;
     var userCoordinatesPath;
@@ -103,7 +188,7 @@ $(document).ready(function () {
     var connectionsRef = database.ref("/connections");
     var connectedRef = database.ref(".info/connected");
 
-    
+
     connectedRef.on("value", function (connectedSnapshot) {
         if (connectedSnapshot.val()) {
             var theConnection = connectionsRef.push(true);
@@ -141,7 +226,7 @@ $(document).ready(function () {
         let theCurrentLat = snapshot.child(userCoordinatesPath + "/currentLat").val();
         let theCurrentLong = snapshot.child(userCoordinatesPath + "/currentLong").val();
         console.log("from firebase: " + theCurrentLat, theCurrentLong);
-        
+
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
@@ -153,7 +238,7 @@ $(document).ready(function () {
         console.log("from firebase: " + theRestaurantType, theRequestedTime);
         theRequestedTime = moment(theRequestedTime, "M/D/YYYY HH:mm ").format("X");
         console.log(theRequestedTime);
-        if(!gotRestaurantData && userLatitude){   
+        if (!gotRestaurantData && userLatitude) {
             yelpAPICall(theRestaurantType, theRequestedTime);
         }
     }, function (errorObject) {
@@ -162,8 +247,21 @@ $(document).ready(function () {
     //#endregion
 
     //#region - yelp
+
+    // TODO: call placeComplexMarker(theLatLong, title, restaurantOrMovie, singleOrMultiple)
+
+    // theLatLong is an object formatted like this: { lat: userLatitude, lng: userLongitude }
+    // NOTE: theLatLong is NOT NEEDED when placing multiple markers, but YOU MUST put 0 in its place
+
+    // title is a string consisting of the venue name
+    // NOTE: title is NOT NEEDED when placing multiple markers, but YOU MUST put "" in its place
+
+    // values for restaurantOrMovie are "restaurant" or "movie"
+    // values for singleOrMultiple are "single" or "multiple" (markers to place)
+    // NOTE: when placing multiple markers, you must populate the array named "venues"
+    // see bottom of this javascript file for a description of that array
+
     function yelpAPICall(restaurantType, requestedTime) {
-        
         console.log(userLatitude + userLongitude);
         gotRestaurantData = true;
         var settings = {
@@ -180,14 +278,12 @@ $(document).ready(function () {
             gotRestaurantData = true;
             addRestaurants(response.businesses)
         });
-        
-    
     }
 
-    function addRestaurants(restaurtArray){
-        for(var i = 0; i < restaurtArray.length; i++){
+    function addRestaurants(restaurtArray) {//TODO: is this an intentional abbreviation?
+        for (var i = 0; i < restaurtArray.length; i++) {
             var restaurant = restaurtArray[i];
-            var newImage = $("<image src=" + restaurant.image_url+ ">");
+            var newImage = $("<image src=" + restaurant.image_url + ">");
             newImage.addClass("restaurant-pic");
             var newRow = $("<tr>");
             newRow.attr("data-longitude", restaurant.coordinates.longitude);
@@ -201,9 +297,25 @@ $(document).ready(function () {
             $("#restaurant-table").append(newRow);
         }
     }
-
-
     //#endregion
+
+
+    // ---------------------------------------------------------------------------
+    // TODO: [ ]Daniel/restaurants, and [ ]John/movies: Please make a function to
+    // get the necessary data out of your API responses and set the global array
+    // "venues" on the fly with the following format to put your venue locations on map.
+
+    // venues = [
+    //     ["restaurant name in double quotes", restaurant-latitude, restaurant-longitude, z-index],
+    //     ["another restaurant name", restaurant-latitude, restaurant-longitude, z-index],
+    // ];
+
+    // Here's some sample data:
+    // venues = [
+    //     ["Cocina Desmond", 35.8296462, -79.1090949, 1],
+    //     ["Willie's BBQ", 35.83, -79.11, 1],
+    // ];
+    // ---------------------------------------------------------------------------
 
     console.log("v1.2"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 });
