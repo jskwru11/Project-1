@@ -16,17 +16,62 @@
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPchfMQ9Do2TWSFQTKjKJlitT5y_Fdrdc&callback=initMap">
     </script>
     <style>
-        html,
+        /* html,
         body {
             height: 100%;
             margin: 0;
             padding: 0;
-        }
+        } */
     </style>
 </head>
 
 <body>
 
+
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCentered">
+        Food Type & Time:
+        </button>
+
+        <!-- Modal -->
+        <div class="modal" id="exampleModalCentered" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenteredLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenteredLabel">Food Type & Time:</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+                <div class="modal-body">
+                    <form>
+                    <div class="form-group row">
+                        <label for="inputFood" class="col-sm-2 col-form-label">Type In Food Choice:</label>
+                        <div class="col-sm-10">
+                        <input type="food" class="form-control" id="inputFood">
+                        </div>
+                    </div>
+                    <form>
+                    <div class="form-group row">
+                        <label for="inputTime" class="col-sm-2 col-form-label">Time:</label>
+                        <div class="col-sm-10">
+                        <input type="time" class="form-control" id="inputTime">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-10 offset-sm-2">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        </div>
+
+        
+=======
 
     <!-- Set up first header centered -->
     <!-- Setup login in button using a knife and fork icon -->
@@ -106,10 +151,12 @@
                
                 <button type="submit" class="btn btn-primary">Submit</button>
               </form>
-        
-            <!-- Inserted cards for various possible use topped off with a pic on the top end. However, can be used for other purposes. Just placed to give a visual layout.-->
+      
+      <!-- Inserted cards for various possible use topped off with a pic on the top end. However, can be used for other purposes. Just placed to give a visual layout.-->
             <hr>
             </div> 
+    <!-- 02-01-2019 Hooman has commented out the section below, at least temporarily -->
+
             <!-- <div class="card-deck">
             <div class="card">
                 <img src="./assets/images/resturant1.png" class="card-img-top" alt="...">
