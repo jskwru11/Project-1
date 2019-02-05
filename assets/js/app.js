@@ -179,6 +179,7 @@ $(document).ready(function () {
         //clear the form
         $("#inputFood").val("");
         $("#inputTime").val("");
+        $("#myModal").modal('toggle');
     });
     //on-click event for restaurant selection 
     $(document).on("click", ".restaurant-row", function(){
