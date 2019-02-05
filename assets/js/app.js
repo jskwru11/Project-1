@@ -57,6 +57,10 @@ $(document).ready(function () {
     }
     //#endregion
 
+    //#region - extract venue latitude and longitude from name search
+
+    //#endregion
+
     //#region - markers
     var venues = [];
     //see https://developers.google.com/maps/documentation/javascript/examples/icon-complex
@@ -157,6 +161,7 @@ $(document).ready(function () {
     };
     //#endregion
 
+    //#region - restaurant selection
     //on-submit event for restaurant form, also adds this info the firebase database,
     $("#restaurant-form").on("submit", function (event) {
         event.preventDefault();
@@ -180,8 +185,9 @@ $(document).ready(function () {
         $("#inputFood").val("");
         $("#inputTime").val("");
     });
+    //dd-branch
     //on-click event for restaurant selection 
-    $(document).on("click", ".restaurant-row", function(){
+    $(document).on("click", ".restaurant-row", function () {
         console.log("i've been clicked");
         var restaurantLongitude = $(this).attr("data-longitude");
         var restaurantLatitude = $(this).attr("data-latitude");
@@ -198,6 +204,8 @@ $(document).ready(function () {
             name: restaurantName
         });
     });
+    //#endregion
+
     //#region - firebase listeners
     var userIdentificationPath;
     var userCoordinatesPath;
@@ -234,6 +242,7 @@ $(document).ready(function () {
             userIdentificationPath = "users/" + userID + "/identification";
             userCoordinatesPath = "users/" + userID + "/coordinates";
             userPreferencesPath = "users/" + userID + "/preferences";
+            userRestaurantsPath = "users/" + userID + "/restaurants";
         };
         getLocation();
     });
@@ -263,7 +272,7 @@ $(document).ready(function () {
         console.log("entries-error: " + errorObject.code);
     });
 
-    database.ref(userRestaurantPick).on("value", function (snapshot){
+    database.ref(userRestaurantPick).on("value", function (snapshot) {
         console.log(snapshot.val());
     });
     //#endregion
@@ -305,7 +314,8 @@ $(document).ready(function () {
     function addRestaurants(restaurtArray) {//TODO: is this an intentional abbreviation?
         for (var i = 0; i < restaurtArray.length; i++) {
             var restaurant = restaurtArray[i];
-            var newImage = $("<img src=" + restaurant.image_url+ ">");
+            dd - branch
+            var newImage = $("<img src=" + restaurant.image_url + ">");
 
             newImage.addClass("restaurant-pic");
             var newRow = $("<tr>");
