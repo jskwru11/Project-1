@@ -282,10 +282,14 @@ $(document).ready(function () {
     }
 
     function addRestaurants(restaurtArray){
+        $('#globalWrapper').empty();
         for(var i = 0; i < restaurtArray.length; i++){
             var restaurant = restaurtArray[i];
             var newImage = $("<image src=" + restaurant.image_url+ ">");
             newImage.addClass("restaurant-pic");
+            newImage.attr("data-longitude", restaurant.coordinates.longitude);
+            newImage.attr("data-latitude", restaurant.coordinates.latitude);
+
             var newRow = $("<tr>");
             newRow.attr("data-longitude", restaurant.coordinates.longitude);
             newRow.attr("data-latitude", restaurant.coordinates.latitude);
