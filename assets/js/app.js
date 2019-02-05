@@ -180,7 +180,6 @@ $(document).ready(function () {
         $("#inputFood").val("");
         $("#inputTime").val("");
     });
- dd-branch
     //on-click event for restaurant selection 
     $(document).on("click", ".restaurant-row", function(){
         console.log("i've been clicked");
@@ -306,7 +305,6 @@ $(document).ready(function () {
     function addRestaurants(restaurtArray) {//TODO: is this an intentional abbreviation?
         for (var i = 0; i < restaurtArray.length; i++) {
             var restaurant = restaurtArray[i];
-dd-branch
             var newImage = $("<img src=" + restaurant.image_url+ ">");
 
             newImage.addClass("restaurant-pic");
