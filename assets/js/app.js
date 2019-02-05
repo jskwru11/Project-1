@@ -377,14 +377,8 @@ $(document).ready(function () {
         });
     }
 
-<<<<<<< HEAD
-    function addRestaurants(restaurtArray){
-        $('#globalWrapper').empty();
-        for(var i = 0; i < restaurtArray.length; i++){
-=======
     function addRestaurants(restaurtArray) {//TODO: is this an intentional abbreviation?
         for (var i = 0; i < restaurtArray.length; i++) {
->>>>>>> be048f0553a67e13b48a12b8e12b029585100b69
             var restaurant = restaurtArray[i];
             var newImage = $("<image src=" + restaurant.image_url + ">");
             newImage.addClass("restaurant-pic");
