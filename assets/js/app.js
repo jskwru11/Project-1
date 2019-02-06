@@ -206,6 +206,19 @@ $(document).ready(function () {
         //get current parameters
         var restaurantSelection = $("#inputFood").val().trim();
         var selectedTime = $("#inputTime").val().trim();
+        var priceSelected = []
+        $(".toggle").each(function(index){
+            if( $(this).hasClass("btn-success")){
+                priceSelected.push(index +1)
+            } 
+        });
+        var pricesSelected = [];
+        for(var i = 0; i < priceSelected.length; i++){
+            pricesSelected.push(priceSelected[i]);
+        }
+        pricesSelected =  pricesSelected.toString();
+        console.log("PRICES SELECTED ARRAY", priceSelected)
+        console.log("SELECTED PRICE",priceSelected);
         console.log("restaurant" + restaurantSelection);
         console.log("time" + selectedTime);
         //format time for UNIX conversion
@@ -215,6 +228,7 @@ $(document).ready(function () {
         database.ref(userPreferencesPath).set({
             restaurantType: restaurantSelection,
             requestedTime: theSelectedTime,
+            priceRange: priceSelected.toString()
         });
         //clear the form
         $("#inputFood").val("");
@@ -291,11 +305,14 @@ $(document).ready(function () {
         console.log("user preferences path value change " + userPreferencesPath, userID);
         let theRestaurantType = snapshot.child(userPreferencesPath + "/restaurantType").val();
         let theRequestedTime = snapshot.child(userPreferencesPath + "/requestedTime").val();
+        let priceRangeSelected = snapshot.child(userPreferencesPath + "/priceRange").val();
+        var numberDollarSigns = priceRangeSelected.length;
+        console.log("PRICE RANGE FROM FIREBASE", priceRangeSelected);
         console.log("userquery from firebase: " + theRestaurantType, theRequestedTime);
         theRequestedTime = moment(theRequestedTime, "M/D/YYYY HH:mm ").format("X");
         console.log("theRequestedTime: " + theRequestedTime);
         if (!gotRestaurantData && userLatitude) {
-            yelpAPICall(theRestaurantType, theRequestedTime);
+            yelpAPICall(theRestaurantType, theRequestedTime, numberDollarSigns);
         }
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
@@ -321,11 +338,11 @@ $(document).ready(function () {
     // NOTE: when placing multiple markers, you must populate the array named "venues"
     // see bottom of this javascript file for a description of that array
 
-    function yelpAPICall(restaurantType, requestedTime) {
+    function yelpAPICall(restaurantType, requestedTime, priceRange) {
         console.log(userLatitude + userLongitude);
         gotRestaurantData = true;
         var settings = {
-            "url": "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?term=" + restaurantType + "&latitude=" + userLatitude + "&longitude=" + userLongitude + "&open_at=" + requestedTime + "&limit=10",
+            "url": "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?term=" + restaurantType + "&latitude=" + userLatitude + "&longitude=" + userLongitude + "&open_at=" + requestedTime + "&price=" + priceRange + "&limit=10",
             "method": "GET",
             "timeout": 0,
             "headers": {
@@ -336,7 +353,13 @@ $(document).ready(function () {
             console.log(response);
             console.log(response.businesses)
             gotRestaurantData = true;
+            if(response.businesses.length < 1) {
+                var alertDiv = $("<div>").text("There are no restaurants matching that request. Bummer. Try another!");
+                $("#restaurant-table").append(alertDiv);
+            }
+            else{
             addRestaurants(response.businesses)
+        }
         });
     }
 
