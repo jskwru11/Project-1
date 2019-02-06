@@ -16,12 +16,12 @@ var userRestaurantPath;
 
 //#region - firebase authentication
 var config = {
-    apiKey: "AIzaSyAj4Sk5C6HVHyuUZS3aLAzChEQccGWT4gA",
-    authDomain: "project-1-dm-clone.firebaseapp.com",
-    databaseURL: "https://project-1-dm-clone.firebaseio.com",
-    projectId: "project-1-dm-clone",
-    storageBucket: "project-1-dm-clone.appspot.com",
-    messagingSenderId: "264075250694"
+    apiKey: "AIzaSyDJjHXFsfWA5UNS_7-aWWB0IUt7pTEXr7E",
+    authDomain: "dsm-group-project-1.firebaseapp.com",
+    databaseURL: "https://dsm-group-project-1.firebaseio.com",
+    projectId: "dsm-group-project-1",
+    storageBucket: "dsm-group-project-1.appspot.com",
+    messagingSenderId: "729543680357"
 };
 firebase.initializeApp(config);
 
