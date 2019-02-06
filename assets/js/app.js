@@ -13,11 +13,16 @@ $(document).ready(function () {
     //#endregion
 
     //#region - geolocation
+    var map;
     var userLatitude;
     var userLongitude;
     var initMapLatLong;
     var mapDisplayField = $("#map");
     var gotRestaurantData = true;
+    var service;
+    var infowindow;
+    var request;
+    var movieTheaterNames;
 
     function getLocation() {
         if (navigator.geolocation) {
@@ -45,6 +50,7 @@ $(document).ready(function () {
                 zoom: zoom,
                 center: userLatLong
             });
+
             placeComplexMarker(userLatLong, "You are here", "user", "single");
             let todaysDate = new Date().toLocaleDateString("en-US");
             let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -55,10 +61,27 @@ $(document).ready(function () {
             });
         }, 500);
     }
-    //#endregion
 
-    //#region - extract venue latitude and longitude from name search
+    function getLatLongFromVenueName(movieTheaterNames) {
+        // TODO: the following line is SAMPLE DATA
+        movieTheaterNames = ["theater 1 name", "theater 2 name", "theater 3 name"];
 
+        for (let i = 0; i < movieTheaterNames.length; i++) {
+            request = {
+                query: movieTheaterNames[i],
+                fields: ["name", "geometry"],
+            };
+            service = new google.maps.places.PlacesService(map);
+
+            service.findPlaceFromQuery(request, function (results, status) {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    for (var i = 0; i < results.length; i++) {
+                        placeComplexMarker(results[i].geometry.location, results[i].name, "movie", "single");
+                    };
+                };
+            });
+        };
+    };
     //#endregion
 
     //#region - markers
@@ -312,7 +335,7 @@ $(document).ready(function () {
         });
     }
 
-    function addRestaurants(restaurantArray) {//TODO: is this an intentional abbreviation?
+    function addRestaurants(restaurantArray) {
         for (var i = 0; i < restaurantArray.length; i++) {
             var restaurant = restaurantArray[i];
             var newImage = $("<img src=" + restaurant.image_url + ">");
@@ -329,7 +352,7 @@ $(document).ready(function () {
             newRow.append(imageColumn, nameColumn, descriptionColumn, priceColumn);
             $("#restaurant-table").append(newRow);
             //push restaurant info to venues array for putting on map
-            venues.push([restaurant.name, restaurant.coordinates.latitude,restaurant.coordinates.longitude]);
+            venues.push([restaurant.name, restaurant.coordinates.latitude, restaurant.coordinates.longitude, 1]);
         }
         console.log(venues);
     }
@@ -337,20 +360,31 @@ $(document).ready(function () {
 
 
     // ---------------------------------------------------------------------------
-    // TODO: [ ]Daniel/restaurants, and [ ]John/movies: Please make a function to
+    // TODO: [X]Daniel/restaurants, and [ ]John/movies: Please make a function to
     // get the necessary data out of your API responses and set the global array
     // "venues" on the fly with the following format to put your venue locations on map.
-
+    //
     // venues = [
     //     ["restaurant name in double quotes", restaurant-latitude, restaurant-longitude, z-index],
     //     ["another restaurant name", restaurant-latitude, restaurant-longitude, z-index],
     // ];
-
+    //
     // Here's some sample data:
     // venues = [
     //     ["Cocina Desmond", 35.8296462, -79.1090949, 1],
     //     ["Willie's BBQ", 35.83, -79.11, 1],
     // ];
+    // ---------------------------------------------------------------------------
+
+
+    // ---------------------------------------------------------------------------
+    // TODO: [ ]John/movies: Please make a function to get the movie theater
+    // name out of your API responses and make an array called movieTheaterNames
+    // with a list of the names formatted list this:
+    // movieTheaterNames = ["theater 1 name", "theater 2 name", "etc..."];
+    //
+    // then you just call getLatLongFromVenueName(movieTheaterNames) and I'll do
+    // the rest
     // ---------------------------------------------------------------------------
 
     console.log("v1.3"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
