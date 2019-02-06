@@ -28,6 +28,7 @@ $(document).ready(function () {
     }
 
     function showPosition(position) {
+        console.log("What is position HOOMAN>", position);
         userLatitude = parseFloat(position.coords.latitude);
         userLongitude = parseFloat(position.coords.longitude);
         if (initMapLatLong != userLatitude, userLongitude) {
@@ -38,12 +39,12 @@ $(document).ready(function () {
     function initMap() {
         setTimeout(function () {
             console.log("init map: " + userLatitude, userLongitude);
-            initMapLatLong = userLatitude, userLongitude;
-            let userLatLong = { lat: userLatitude, lng: userLongitude };
+            initMapLatLong = userLatitude, userLongitude;  // 35.8575, -74.3657
+            let userLatLong = { lat: userLatitude, lng: userLongitude }; // { lat: 35.8575, lng: -74.3657 }
             let zoom = 16
             map = new google.maps.Map(document.getElementById("map"), {
-                zoom: zoom,
-                center: userLatLong
+                zoom: zoom, // 16
+                center: userLatLong // { lat: 35.8575, lng: -74.3657 }
             });
             placeComplexMarker(userLatLong, "You are here", "user", "single");
             let todaysDate = new Date().toLocaleDateString("en-US");
