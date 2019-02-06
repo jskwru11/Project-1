@@ -18,6 +18,7 @@ $(document).ready(function () {
     var initMapLatLong;
     var mapDisplayField = $("#map");
     var gotRestaurantData = true;
+    let userID;
 
     function getLocation() {
         if (navigator.geolocation) {
@@ -278,8 +279,9 @@ $(document).ready(function () {
         console.log("entries-error: " + errorObject.code);
     });
 
-    database.ref(userRestaurantPath).on("value", function (snapshot) {
-        console.log(snapshot.val());
+    database.ref(`users/${userID}/restaurants`).on("value", function (snapshot) {
+        var obj = snapshot.val();
+        console.log('This is from firebase for selected restaurant data ' + obj);
     });
     //#endregion
 
@@ -343,6 +345,10 @@ $(document).ready(function () {
         console.log(venues);
     }
     //#endregion
+
+    // make the move api call
+
+    database.ref()
 
 
     // ---------------------------------------------------------------------------
