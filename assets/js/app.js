@@ -292,7 +292,7 @@ $(document).ready(function () {
         let theRestaurantType = snapshot.child(userPreferencesPath + "/restaurantType").val();
         let theRequestedTime = snapshot.child(userPreferencesPath + "/requestedTime").val();
         console.log("userquery from firebase: " + theRestaurantType, theRequestedTime);
-        // theRequestedTime = moment(theRequestedTime, "M/D/YYYY HH:mm ").format("X");
+        theRequestedTime = moment(theRequestedTime, "M/D/YYYY HH:mm ").format("X");
         console.log("theRequestedTime: " + theRequestedTime);
         if (!gotRestaurantData && userLatitude) {
             yelpAPICall(theRestaurantType, theRequestedTime);
@@ -341,6 +341,7 @@ $(document).ready(function () {
     }
 
     function addRestaurants(restaurantArray) {
+        venues = [];
         for (var i = 0; i < restaurantArray.length; i++) {
             var restaurant = restaurantArray[i];
             var newImage = $("<img src=" + restaurant.image_url + ">");
