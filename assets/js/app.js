@@ -13,11 +13,16 @@ $(document).ready(function () {
     //#endregion
 
     //#region - geolocation
+    var map;
     var userLatitude;
     var userLongitude;
     var initMapLatLong;
     var mapDisplayField = $("#map");
     var gotRestaurantData = true;
+    var service;
+    var infowindow;
+    var request;
+
 
     function getLocation() {
         if (navigator.geolocation) {
@@ -45,6 +50,7 @@ $(document).ready(function () {
                 zoom: zoom,
                 center: userLatLong
             });
+
             placeComplexMarker(userLatLong, "You are here", "user", "single");
             let todaysDate = new Date().toLocaleDateString("en-US");
             let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -55,10 +61,30 @@ $(document).ready(function () {
             });
         }, 500);
     }
-    //#endregion
 
-    //#region - extract venue latitude and longitude from name search
+    // infowindow = new google.maps.InfoWindow(); <--- this would be necessary
+    // for the addListener commented out below.
 
+    //TODO: this request object is SAMPLE DATA
+    request = {
+        query: "Babymoon Cafe",
+        fields: ["name", "geometry"],
+    };
+    service = new google.maps.places.PlacesService(map);
+
+    service.findPlaceFromQuery(request, function (results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            for (var i = 0; i < results.length; i++) {
+                placeComplexMarker(results[i].geometry.location, results[i].name, "movie", "single");
+                // This addListener below could be useful
+                // google.maps.event.addListener(marker, "click", function () {
+                //     infowindow.setContent(place.name);
+                //     infowindow.open(map, this);
+                // });
+                // createMarker(results[i]);
+            };
+        };
+    });
     //#endregion
 
     //#region - markers
@@ -312,7 +338,7 @@ $(document).ready(function () {
         });
     }
 
-    function addRestaurants(restaurantArray) {//TODO: is this an intentional abbreviation?
+    function addRestaurants(restaurantArray) {
         for (var i = 0; i < restaurantArray.length; i++) {
             var restaurant = restaurantArray[i];
             var newImage = $("<img src=" + restaurant.image_url + ">");
@@ -329,7 +355,7 @@ $(document).ready(function () {
             newRow.append(imageColumn, nameColumn, descriptionColumn, priceColumn);
             $("#restaurant-table").append(newRow);
             //push restaurant info to venues array for putting on map
-            venues.push([restaurant.name, restaurant.coordinates.latitude,restaurant.coordinates.longitude]);
+            venues.push([restaurant.name, restaurant.coordinates.latitude, restaurant.coordinates.longitude, 1]);
         }
         console.log(venues);
     }
@@ -337,7 +363,7 @@ $(document).ready(function () {
 
 
     // ---------------------------------------------------------------------------
-    // TODO: [ ]Daniel/restaurants, and [ ]John/movies: Please make a function to
+    // TODO: [X]Daniel/restaurants, and [ ]John/movies: Please make a function to
     // get the necessary data out of your API responses and set the global array
     // "venues" on the fly with the following format to put your venue locations on map.
 
