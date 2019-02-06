@@ -1,4 +1,4 @@
-console.log("v1.358"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+console.log("v1.36"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 
 var map;
 var userLatitude;
@@ -95,7 +95,6 @@ $(document).ready(function () {
     //#endregion
 
     //#region - markers
-    var venues = [];
     //see https://developers.google.com/maps/documentation/javascript/examples/icon-complex
 
     // Origins, anchor positions and coordinates of the marker increase in the X
@@ -137,10 +136,12 @@ $(document).ready(function () {
     //TODO: SAMPLE DATA - this array will be constructed on the fly
     //each time multiple markers need to be set down. the following is
     //sample data and should be deleted for production.
-    venues = [
-        ["Cocina Desmond", 35.8296462, -79.1090949, 1],
-        ["Willie's BBQ", 35.83, -79.11, 1],
-    ];
+    // venues = [
+    //     ["Cocina Desmond", 35.8296462, -79.1090949, 1],
+    //     ["Willie's BBQ", 35.83, -79.11, 1],
+    // ];
+    //
+    // for pasting into test tools: [["Cocina Desmond", 35.8296462, -79.1090949, 1],["Willie's BBQ", 35.83, -79.11, 1],]
 
     function placeMarker(theLatLong, title) { //this is the simple version
         //which we may not use
@@ -180,19 +181,19 @@ $(document).ready(function () {
                 icon: image,
                 shape: shape,
                 title: title,
-                // zIndex: zindex //we may or may not want to use this
+                zIndex: 1 //we may or may not want to use this
             });
         } else {
             for (var i = 0; i < venues.length; i++) {//multiple needs a venues
                 //array, see sample data above
                 var venue = venues[i];
                 var marker = new google.maps.Marker({
-                    position: { lat: venue[1], lng: venue[2] },
+                    position: { lat: parseFloat(venue[1]), lng: parseFloat(venue[2]) },
                     map: map,
                     icon: image,
                     shape: shape,
                     title: venue[0],
-                    // zIndex: venue[3] //we may or may not want to use this
+                    zIndex: venue[3] //we may or may not want to use this
                 });
             };
         };
