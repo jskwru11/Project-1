@@ -12,16 +12,23 @@
     <script src="assets/js/app.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
     <link rel="stylesheet" href="assets/css/style.css">
+
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPchfMQ9Do2TWSFQTKjKJlitT5y_Fdrdc&libraries=places&callback=initMap">
+        </script>
+
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPchfMQ9Do2TWSFQTKjKJlitT5y_Fdrdc&libraries=places&callback=initMap">
     </script>
+
     <style>
         /* Always set the map height explicitly to define the size of the div
            * element that contains the map. */
         #map {
             height: 100%;
         }
+
         /* Optional: Makes the sample page fill the window. */
         html,
         body {
@@ -132,6 +139,14 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div id="testing-wrapper" class="testing">
+        <div id="testing-buttons" class="testing"><button id="test-1" type="button" class="test-button">do
+                addRestaurants</button><button id="test-2" type="button" class="test-button">do
+                placeComplexMarker</button><button id="test-3" type="button" class="test-button">do
+                getLatLongFromVenueName</button></div>
+        <textarea id="testing-input" class="testing"></textarea>
+        <div id="testing-display" class="testing"></div>
     </div>
 </body>
 
