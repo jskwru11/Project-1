@@ -212,11 +212,6 @@ $(document).ready(function () {
                 priceSelected.push(index +1)
             } 
         });
-        var pricesSelected = [];
-        for(var i = 0; i < priceSelected.length; i++){
-            pricesSelected.push(priceSelected[i]);
-        }
-        pricesSelected =  pricesSelected.toString();
         console.log("PRICES SELECTED ARRAY", priceSelected)
         console.log("SELECTED PRICE",priceSelected);
         console.log("restaurant" + restaurantSelection);
