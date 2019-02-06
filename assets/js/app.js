@@ -1,42 +1,37 @@
-$(document).ready(function () {
-    //#region - firebase authentication
-    var config = {
-        apiKey: "AIzaSyDJjHXFsfWA5UNS_7-aWWB0IUt7pTEXr7E",
-        authDomain: "dsm-group-project-1.firebaseapp.com",
-        databaseURL: "https://dsm-group-project-1.firebaseio.com",
-        projectId: "dsm-group-project-1",
-        storageBucket: "dsm-group-project-1.appspot.com",
-        messagingSenderId: "729543680357"
-    };
-    firebase.initializeApp(config);
-    var database = firebase.database();
-    //#endregion
+console.log("v1.356"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 
-    //#region - geolocation
-    var userLatitude;
-    var userLongitude;
-    var initMapLatLong;
-    var mapDisplayField = $("#map");
-    var gotRestaurantData = true;
+var map;
+var userLatitude;
+var userLongitude;
+var initMapLatLong;
+var gotRestaurantData = true;
+var service;
+var infowindow;
+var request;
+var movieTheaterNames;
+var userIdentificationPath;
+var userCoordinatesPath;
+var userPreferencesPath;
+var userRestaurantPath;
 
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
-        } else {
-            console.log("Geolocation is not supported by this browser");
-        }
-    }
+//#region - firebase authentication
+var config = {
+    apiKey: "AIzaSyDJjHXFsfWA5UNS_7-aWWB0IUt7pTEXr7E",
+    authDomain: "dsm-group-project-1.firebaseapp.com",
+    databaseURL: "https://dsm-group-project-1.firebaseio.com",
+    projectId: "dsm-group-project-1",
+    storageBucket: "dsm-group-project-1.appspot.com",
+    messagingSenderId: "729543680357"
+};
+firebase.initializeApp(config);
 
-    function showPosition(position) {
-        console.log("What is position HOOMAN>", position);
-        userLatitude = parseFloat(position.coords.latitude);
-        userLongitude = parseFloat(position.coords.longitude);
-        if (initMapLatLong != userLatitude, userLongitude) {
-            initMap();
-        }
-    }
+var database = firebase.database();
+var connectionsRef = database.ref("/connections");
+var connectedRef = database.ref(".info/connected");
+//#endregion
 
-    function initMap() {
+function initMap() {
+    if (userLatitude != undefined && userLongitude != undefined) {
         setTimeout(function () {
             console.log("init map: " + userLatitude, userLongitude);
             initMapLatLong = userLatitude, userLongitude;  // 35.8575, -74.3657
@@ -46,7 +41,7 @@ $(document).ready(function () {
                 zoom: zoom, // 16
                 center: userLatLong // { lat: 35.8575, lng: -74.3657 }
             });
-            placeComplexMarker(userLatLong, "You are here", "user", "single");
+
             let todaysDate = new Date().toLocaleDateString("en-US");
             let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             database.ref(userCoordinatesPath).set({
@@ -55,11 +50,48 @@ $(document).ready(function () {
                 currentLong: userLongitude,
             });
         }, 500);
+    };
+}
+
+$(document).ready(function () {
+    //#region - geolocation
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            console.log("Geolocation is not supported by this browser");
+        }
     }
-    //#endregion
 
-    //#region - extract venue latitude and longitude from name search
+    function showPosition(position) {
+        userLatitude = parseFloat(position.coords.latitude);
+        userLongitude = parseFloat(position.coords.longitude);
+        if (initMapLatLong != userLatitude, userLongitude) {
+            console.log("redoing initMap: " + initMapLatLong + " / " + userLatitude, userLongitude);
+            initMap();
+        }
+    }
 
+    function getLatLongFromVenueName(movieTheaterNames) {
+        // TODO: the following line is SAMPLE DATA
+        movieTheaterNames = ["theater 1 name", "theater 2 name", "theater 3 name"];
+
+        for (let i = 0; i < movieTheaterNames.length; i++) {
+            request = {
+                query: movieTheaterNames[i],
+                fields: ["name", "geometry"],
+            };
+            service = new google.maps.places.PlacesService(map);
+
+            service.findPlaceFromQuery(request, function (results, status) {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    for (var i = 0; i < results.length; i++) {
+                        placeComplexMarker(results[i].geometry.location, results[i].name, "movie", "single");
+                    };
+                };
+            });
+        };
+    };
     //#endregion
 
     //#region - markers
@@ -68,34 +100,36 @@ $(document).ready(function () {
 
     // Origins, anchor positions and coordinates of the marker increase in the X
     // direction to the right and in the Y direction down.
-    var imageRestaurant = {//TODO: one image for restaurants, another for movies
-        url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-        // This marker is 20 pixels wide by 32 pixels high.
-        size: new google.maps.Size(20, 32),
-        // The origin for this image is (0, 0).
-        origin: new google.maps.Point(0, 0),
-        // The anchor for this image is the base of the flagpole at (0, 32).
-        anchor: new google.maps.Point(0, 32)
-    };
-    var imageMovie = {//TODO: one image for restaurants, another for movies
-        url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-        // This marker is 20 pixels wide by 32 pixels high.
-        size: new google.maps.Size(20, 32),
-        // The origin for this image is (0, 0).
-        origin: new google.maps.Point(0, 0),
-        // The anchor for this image is the base of the flagpole at (0, 32).
-        anchor: new google.maps.Point(0, 32)
-    };
+    setTimeout(function () { // this is a workaround for "Uncaught ReferenceError: google is not defined"
+        var imageRestaurant = {//TODO: one image for restaurants, another for movies
+            url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+            // This marker is 20 pixels wide by 32 pixels high.
+            size: new google.maps.Size(20, 32),
+            // The origin for this image is (0, 0).
+            origin: new google.maps.Point(0, 0),
+            // The anchor for this image is the base of the flagpole at (0, 32).
+            anchor: new google.maps.Point(0, 32)
+        };
+        var imageMovie = {//TODO: one image for restaurants, another for movies
+            url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+            // This marker is 20 pixels wide by 32 pixels high.
+            size: new google.maps.Size(20, 32),
+            // The origin for this image is (0, 0).
+            origin: new google.maps.Point(0, 0),
+            // The anchor for this image is the base of the flagpole at (0, 32).
+            anchor: new google.maps.Point(0, 32)
+        };
 
-    var imageUser = {//TODO: one image for restaurants, another for movies
-        url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-        // This marker is 20 pixels wide by 32 pixels high.
-        size: new google.maps.Size(20, 32),
-        // The origin for this image is (0, 0).
-        origin: new google.maps.Point(0, 0),
-        // The anchor for this image is the base of the flagpole at (0, 32).
-        anchor: new google.maps.Point(0, 32)
-    };
+        var imageUser = {//TODO: one image for restaurants, another for movies
+            url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+            // This marker is 20 pixels wide by 32 pixels high.
+            size: new google.maps.Size(20, 32),
+            // The origin for this image is (0, 0).
+            origin: new google.maps.Point(0, 0),
+            // The anchor for this image is the base of the flagpole at (0, 32).
+            anchor: new google.maps.Point(0, 32)
+        };
+    }, 5000);
 
     //TODO: SAMPLE DATA - this array will be constructed on the fly
     //each time multiple markers need to be set down. the following is
@@ -209,14 +243,6 @@ $(document).ready(function () {
     //#endregion
 
     //#region - firebase listeners
-    var userIdentificationPath;
-    var userCoordinatesPath;
-    var userPreferencesPath;
-    var userRestaurantPath;
-    var connectionsRef = database.ref("/connections");
-    var connectedRef = database.ref(".info/connected");
-
-
     connectedRef.on("value", function (connectedSnapshot) {
         if (connectedSnapshot.val()) {
             var theConnection = connectionsRef.push(true);
@@ -224,9 +250,9 @@ $(document).ready(function () {
         };
     });
 
-    connectionsRef.on("value", function (connectionsSnapshot) {
-        console.log("number online: " + connectionsSnapshot.numChildren());
-    }); // Number of online users is the number of objects in the presence list.
+    // connectionsRef.on("value", function (connectionsSnapshot) {
+    //     console.log("number online: " + connectionsSnapshot.numChildren());
+    // }); // Number of online users is the number of objects in the presence list.
 
     firebase.auth().signInAnonymously().catch(function (error) {
         let errorCode = error.code;
@@ -254,8 +280,9 @@ $(document).ready(function () {
         console.log("user coordinates path value change " + userCoordinatesPath, userID);
         let theCurrentLat = snapshot.child(userCoordinatesPath + "/currentLat").val();
         let theCurrentLong = snapshot.child(userCoordinatesPath + "/currentLong").val();
-        console.log("from firebase: " + theCurrentLat, theCurrentLong);
-
+        console.log("latlong from firebase: " + theCurrentLat, theCurrentLong);
+        let userLatLong = { lat: theCurrentLat, lng: theCurrentLong };
+        placeComplexMarker(userLatLong, "You are here", "user", "single");
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
@@ -264,9 +291,9 @@ $(document).ready(function () {
         console.log("user preferences path value change " + userPreferencesPath, userID);
         let theRestaurantType = snapshot.child(userPreferencesPath + "/restaurantType").val();
         let theRequestedTime = snapshot.child(userPreferencesPath + "/requestedTime").val();
-        console.log("from firebase: " + theRestaurantType, theRequestedTime);
-        theRequestedTime = moment(theRequestedTime, "M/D/YYYY HH:mm ").format("X");
-        console.log(theRequestedTime);
+        console.log("userquery from firebase: " + theRestaurantType, theRequestedTime);
+        // theRequestedTime = moment(theRequestedTime, "M/D/YYYY HH:mm ").format("X");
+        console.log("theRequestedTime: " + theRequestedTime);
         if (!gotRestaurantData && userLatitude) {
             yelpAPICall(theRestaurantType, theRequestedTime);
         }
@@ -274,9 +301,9 @@ $(document).ready(function () {
         console.log("entries-error: " + errorObject.code);
     });
 
-    database.ref(userRestaurantPath).on("value", function (snapshot) {
-        console.log(snapshot.val());
-    });
+    // database.ref(userRestaurantPath).on("value", function (snapshot) {
+    //     console.log(snapshot.val());
+    // });
     //#endregion
 
     //#region - yelp
@@ -313,7 +340,7 @@ $(document).ready(function () {
         });
     }
 
-    function addRestaurants(restaurantArray) {//TODO: is this an intentional abbreviation?
+    function addRestaurants(restaurantArray) {
         for (var i = 0; i < restaurantArray.length; i++) {
             var restaurant = restaurantArray[i];
             var newImage = $("<img src=" + restaurant.image_url + ">");
@@ -330,7 +357,7 @@ $(document).ready(function () {
             newRow.append(imageColumn, nameColumn, descriptionColumn, priceColumn);
             $("#restaurant-table").append(newRow);
             //push restaurant info to venues array for putting on map
-            venues.push([restaurant.name, restaurant.coordinates.latitude,restaurant.coordinates.longitude]);
+            venues.push([restaurant.name, restaurant.coordinates.latitude, restaurant.coordinates.longitude, 1]);
         }
         console.log(venues);
     }
@@ -338,15 +365,15 @@ $(document).ready(function () {
 
 
     // ---------------------------------------------------------------------------
-    // TODO: [ ]Daniel/restaurants, and [ ]John/movies: Please make a function to
+    // TODO: [X]Daniel/restaurants, and [ ]John/movies: Please make a function to
     // get the necessary data out of your API responses and set the global array
     // "venues" on the fly with the following format to put your venue locations on map.
-
+    //
     // venues = [
     //     ["restaurant name in double quotes", restaurant-latitude, restaurant-longitude, z-index],
     //     ["another restaurant name", restaurant-latitude, restaurant-longitude, z-index],
     // ];
-
+    //
     // Here's some sample data:
     // venues = [
     //     ["Cocina Desmond", 35.8296462, -79.1090949, 1],
@@ -354,5 +381,15 @@ $(document).ready(function () {
     // ];
     // ---------------------------------------------------------------------------
 
-    console.log("v1.3"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+
+    // ---------------------------------------------------------------------------
+    // TODO: [ ]John/movies: Please make a function to get the movie theater
+    // name out of your API responses and make an array called movieTheaterNames
+    // with a list of the names formatted list this:
+    // movieTheaterNames = ["theater 1 name", "theater 2 name", "etc..."];
+    //
+    // then you just call getLatLongFromVenueName(movieTheaterNames) and I'll do
+    // the rest
+    // ---------------------------------------------------------------------------
+
 });

@@ -1,8 +1,3 @@
-
-body {
-    height: 1334px;
-}
-
 h1 {
     text-align: center;
     margin-top: 40px;
@@ -11,25 +6,28 @@ h1 {
 }
 
 .btn {
-align-content: right;
-margin: 60px;
-margin-top: 20px;
+    align-content: right;
+    margin: 60px;
+    margin-top: 20px;
 }
+
 .card-deck {
     margin-top: 40px;
     margin-bottom: 20px;
     max-width: 80%;
     align-self: center;
 }
+
 .card-body {
-margin: 10px;
+    margin: 10px;
 }
+
 .nav-link {
     color: blue;
     margin-top: 10px;
     font-weight: bold;
 }
+
 .restaurant-pic {
     height: 80px;
 }
- 
