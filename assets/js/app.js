@@ -267,8 +267,12 @@ $(document).ready(function () {
         theRequestedTime = moment(theRequestedTime, "M/D/YYYY HH:mm ").format("X");
         console.log(theRequestedTime);
         if (!gotRestaurantData && userLatitude) {
-            $('#containerImage').empty();
+            console.log('calling Yelp API...');
             yelpAPICall(theRestaurantType, theRequestedTime);
+            $('#myModal').modal('toggle');
+            $('#containerImage').empty();
+            
+
         }
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
@@ -306,6 +310,7 @@ $(document).ready(function () {
             },
         };
         $.ajax(settings).done(function (response) {
+            $('#containerImage').text('Loading...');
             console.log(response);
             console.log(response.businesses)
             gotRestaurantData = true;
@@ -356,6 +361,5 @@ $(document).ready(function () {
     //     ["Willie's BBQ", 35.83, -79.11, 1],
     // ];
     // ---------------------------------------------------------------------------
-
     console.log("v1.3"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 });
