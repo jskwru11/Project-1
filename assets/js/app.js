@@ -198,7 +198,7 @@ $(document).ready(function () {
         console.log("src: " + restaurantPic);
         var restaurantName = $(this).children(".restaurant-name").text();
         console.log("name: " + restaurantName);
-        database.ref(userRestaurantPick).set({
+        database.ref(userRestaurantPath).set({
             restaurantLat: restaurantLatitude,
             restaurantLong: restaurantLongitude,
             restaurantImg: restaurantPic,
@@ -211,7 +211,7 @@ $(document).ready(function () {
     var userIdentificationPath;
     var userCoordinatesPath;
     var userPreferencesPath;
-    var userRestaurantPick;
+    var userRestaurantPath;
     var connectionsRef = database.ref("/connections");
     var connectedRef = database.ref(".info/connected");
 
@@ -243,7 +243,7 @@ $(document).ready(function () {
             userIdentificationPath = "users/" + userID + "/identification";
             userCoordinatesPath = "users/" + userID + "/coordinates";
             userPreferencesPath = "users/" + userID + "/preferences";
-            userRestaurantsPath = "users/" + userID + "/restaurants";
+            userRestaurantPath = "users/" + userID + "/restaurants";
         };
         getLocation();
     });
@@ -273,7 +273,7 @@ $(document).ready(function () {
         console.log("entries-error: " + errorObject.code);
     });
 
-    database.ref(userRestaurantPick).on("value", function (snapshot) {
+    database.ref(userRestaurantPath).on("value", function (snapshot) {
         console.log(snapshot.val());
     });
     //#endregion
@@ -312,12 +312,10 @@ $(document).ready(function () {
         });
     }
 
-    function addRestaurants(restaurtArray) {//TODO: is this an intentional abbreviation?
-        for (var i = 0; i < restaurtArray.length; i++) {
-            var restaurant = restaurtArray[i];
-            dd - branch
+    function addRestaurants(restaurantArray) {//TODO: is this an intentional abbreviation?
+        for (var i = 0; i < restaurantArray.length; i++) {
+            var restaurant = restaurantArray[i];
             var newImage = $("<img src=" + restaurant.image_url + ">");
-
             newImage.addClass("restaurant-pic");
             var newRow = $("<tr>");
             newRow.attr("data-longitude", restaurant.coordinates.longitude);
@@ -330,7 +328,10 @@ $(document).ready(function () {
             var imageColumn = $("<td>").html(newImage);
             newRow.append(imageColumn, nameColumn, descriptionColumn, priceColumn);
             $("#restaurant-table").append(newRow);
+            //push restaurant info to venues array for putting on map
+            venues.push([restaurant.name, restaurant.coordinates.latitude,restaurant.coordinates.longitude]);
         }
+        console.log(venues);
     }
     //#endregion
 
