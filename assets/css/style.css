@@ -32,6 +32,7 @@ h1 {
     height: 80px;
 }
 
+
 #testing-wrapper {
     display: none;
     position: fixed;
@@ -52,4 +53,9 @@ h1 {
 
 #testing-display {
     font-size: large;
+
+.price-selectors {
+    margin: 0 10px 0 10px;
+    padding: 5px;
+
 }
