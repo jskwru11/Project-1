@@ -182,7 +182,9 @@ $(document).ready(function () {
                 priceSelected.push(index + 1)
             }
         });
-        console.log("PRICES SELECTED ARRAY", priceSelected)
+        if(priceSelected.length === 0){
+            priceSelected = [1,2,3,4];
+        }
         console.log("SELECTED PRICE", priceSelected);
         console.log("restaurant" + restaurantSelection);
         console.log("time" + selectedTime);
@@ -422,4 +424,5 @@ $(document).ready(function () {
         }
     };
     //#endregion
+
 });
