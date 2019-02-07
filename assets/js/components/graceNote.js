@@ -17,9 +17,22 @@
     }
     
     const getData = (loc) => {
+        let theatreNames = [];
+        
         $.get(encodeURL(dateNow, loc, radius)).then(res => {
             console.log('api data fetched');
-            console.log(res)
+            // console.log(res)
+            res.map(results => {
+                results.showtimes.map(theatre => {
+                    if (theatreNames.indexOf(theatre.theatre.name) === -1) {
+                        theatreNames.push(theatre.theatre.name)
+                    }
+                    
+                });
+
+                console.log(theatreNames);
+                return theatreNames;
+            })
         }).catch(error => {
             console.log(`You have encountered an error: ${error}`)
         })

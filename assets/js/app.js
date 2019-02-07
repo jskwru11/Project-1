@@ -178,6 +178,8 @@ $(document).ready(function () {
         $("#inputTime").val("");
         $("#myModal").modal('toggle');
     });
+
+    
     //dd-branch
     //on-click event for restaurant selection 
     $(document).on("click", ".restaurant-row", function () {
