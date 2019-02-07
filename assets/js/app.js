@@ -140,7 +140,9 @@ $(document).ready(function () {
     //#endregion
 
     //#region - markers
+
     function placeMarker(theLatLong, title, restaurantOrMovie, venues) {
+
         if (restaurantOrMovie = "restaurant") {
             var icon = "https://maps.gstatic.com/mapfiles/ms2/micons/yellow.png";
         } else {
