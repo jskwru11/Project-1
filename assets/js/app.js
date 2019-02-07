@@ -1,4 +1,4 @@
-console.log("v1.366"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+console.log("v1.367"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 
 var map;
 var userLatitude;
@@ -35,12 +35,47 @@ function initMap() {
         setTimeout(function () {
             console.log("init map: " + userLatitude, userLongitude);
             initMapLatLong = userLatitude, userLongitude;
-            let userLatLong = { lat: userLatitude, lng: userLongitude };
-            let zoom = 16
+            var userLatLong = { lat: userLatitude, lng: userLongitude };
+            var zoom = 11;
             map = new google.maps.Map(document.getElementById("map"), {
                 zoom: zoom,
                 center: userLatLong
             });
+            var marker = new google.maps.Marker({
+                position: userLatLong,
+                map: map,
+                title: "You are here"
+            });
+
+            infowindow = new google.maps.InfoWindow();
+
+            request = {
+                query: "Zen Motorcycle Maintenance",
+                fields: ["name", "geometry"],
+            };
+
+            service = new google.maps.places.PlacesService(map);
+
+            service.findPlaceFromQuery(request, function (results, status) {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    for (var i = 0; i < results.length; i++) {
+                        createMarker(results[i]);
+                    }
+                }
+            });
+
+            function createMarker(place) {
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: place.geometry.location,
+                    // title: place. ? title
+                });
+
+                google.maps.event.addListener(marker, "click", function () {
+                    infowindow.setContent(place.name);
+                    infowindow.open(map, this);
+                });
+            }
 
             let todaysDate = new Date().toLocaleDateString("en-US");
             let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -73,28 +108,40 @@ $(document).ready(function () {
     }
 
     function getLatLongFromVenueName(movieTheaterNames) {
-        // TODO: the following line is SAMPLE DATA
-        // movieTheaterNames = ["theater 1 name", "theater 2 name", "theater 3 name"];
+        console.log("movieTheaterNames array on next line...");
+        console.log(movieTheaterNames);
+        infowindow = new google.maps.InfoWindow();
 
         for (let i = 0; i < movieTheaterNames.length; i++) {
+            console.log("getting location of: " + movieTheaterNames[i]);
             request = {
                 query: movieTheaterNames[i],
                 fields: ["name", "geometry"],
             };
+
             service = new google.maps.places.PlacesService(map);
 
             service.findPlaceFromQuery(request, function (results, status) {
-                console.log("in findPlaceFromQuery");
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    console.log("status okay");
                     for (var i = 0; i < results.length; i++) {
-                        console.log(results[i].name);
-                        placeComplexMarker(results[i].geometry.location, results[i].name, "movie", "single");
-                    };
-                } else {
-                    console.log(google.maps.places.PlacesServiceStatus);
-                };
+                        createMarker(results[i]);
+                    }
+                }
             });
+
+            function createMarker(place) {
+                var marker = new google.maps.Marker({
+                    icon: "https://maps.gstatic.com/mapfiles/ms2/micons/blue.png",
+                    map: map,
+                    position: place.geometry.location,
+                    title: place.name
+                });
+
+                google.maps.event.addListener(marker, "click", function () {
+                    infowindow.setContent(place.name);
+                    infowindow.open(map, this);
+                });
+            };
         };
     };
     //#endregion
@@ -321,8 +368,9 @@ $(document).ready(function () {
     });
 
     database.ref(userRestaurantPath).on("value", function (snapshot) {
+        console.log("restaurant snapshot on next line...");
         console.log(snapshot.val());
-        var restaurantName  = snapshot.child(userRestaurantPath + "/name").val();
+        var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
         var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
         var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
@@ -345,6 +393,7 @@ $(document).ready(function () {
     // see bottom of this javascript file for a description of that array
 
     function yelpAPICall(restaurantType, requestedTime, priceRange) {
+        console.log("yelpAPICall user latLong on next line...");
         console.log(userLatitude + userLongitude);
         gotRestaurantData = true;
         var settings = {
@@ -356,6 +405,7 @@ $(document).ready(function () {
             },
         };
         $.ajax(settings).done(function (response) {
+            console.log("yelpAPICall response and response.business on next two lines...");
             console.log(response);
             console.log(response.businesses)
             gotRestaurantData = true;
@@ -392,6 +442,7 @@ $(document).ready(function () {
         placeComplexMarker({ lat: 35.83, lng: -79.11 }, "", "restaurant", "multiple", venues);
         // the latLong in this call is moot because we're doing multiple venues,
         // but it must be there
+        console.log("addRestaurants venues on next line...");
         console.log(venues);
     }
     //#endregion
@@ -471,7 +522,9 @@ $(document).ready(function () {
     function testThree() {
         console.log("executes getLatLongFromVenueName - expected input is the array 'movieTheaterNames' after processing the movies API");
         console.log("paste the array-only in the input field. declaring 'movieTheaterNames = ...' is not needed.");
-        var testVarThree = $("#testing-input").val();
+        var theString = $("#testing-input").val();
+        testVarThree = Array.from((theString.split(", ")));
+        console.log("the array going to getLatLongFromVenueNames: " + testVarThree);
         try {
             getLatLongFromVenueName(testVarThree);
         }
