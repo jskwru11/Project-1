@@ -1,9 +1,9 @@
-$(document).ready(() => {
+
     const APIKEY = '7dadpsd62b4jwc7a92arb7fb';
 
 
     let baseUrl = 'http://data.tmsapi.com/v1.1/movies/showings?';
-    let startDate = '2019-02-02';
+    let dateNow = moment().format('YYYY-MM-DD');
     let restLocation = {lat: 35.851000, lng: -78.796130};
     let radius = 10;
     
@@ -16,8 +16,8 @@ $(document).ready(() => {
         return `${url}startDate=${date}&lat=${center.lat}&lng=${center.lng}&radius=${distance}&api_key=${APIKEY}`
     }
     
-    const getData = () => {
-        $.get(encodeURL(startDate, restLocation, radius)).then(res => {
+    const getData = (loc) => {
+        $.get(encodeURL(dateNow, loc, radius)).then(res => {
             console.log('api data fetched');
             console.log(res)
         }).catch(error => {
@@ -29,7 +29,6 @@ $(document).ready(() => {
 
     const newDate = moment("2019-02-02T10:45").format('MMMM Do, YYYY hh:mm a');
     console.log(newDate);
-});
 
 // user + uid + restaurants . restaurant.Lat, restaurant.Long
 
