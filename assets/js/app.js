@@ -1,4 +1,4 @@
-console.log("v1.356"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+console.log("v1.375"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 
 var map;
 var userLatitude;
@@ -34,13 +34,47 @@ function initMap() {
     if (userLatitude != undefined && userLongitude != undefined) {
         setTimeout(function () {
             console.log("init map: " + userLatitude, userLongitude);
+<<<<<<< HEAD
             initMapLatLong = userLatitude, userLongitude;  // 35.8575, -74.3657
             let userLatLong = { lat: userLatitude, lng: userLongitude }; // { lat: 35.8575, lng: -74.3657 }
             let zoom = 16
+=======
+            initMapLatLong = userLatitude, userLongitude;
+            var userLatLong = { lat: userLatitude, lng: userLongitude };
+            var zoom = 11;
+>>>>>>> 65e6294a57c8993db4b2c0377df40bc7e9227b9e
             map = new google.maps.Map(document.getElementById("map"), {
                 zoom: zoom, // 16
                 center: userLatLong // { lat: 35.8575, lng: -74.3657 }
             });
+            var marker = new google.maps.Marker({
+                position: userLatLong,
+                map: map,
+                title: "You are here"
+            });
+
+            infowindow = new google.maps.InfoWindow();
+            service = new google.maps.places.PlacesService(map);
+            service.findPlaceFromQuery(request, function (results, status) {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    for (var i = 0; i < results.length; i++) {
+                        createMarker(results[i]);
+                    }
+                }
+            });
+
+            function createMarker(place) {
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: place.geometry.location,
+                    title: place.name
+                });
+
+                google.maps.event.addListener(marker, "click", function () {
+                    infowindow.setContent(place.name);
+                    infowindow.open(map, this);
+                });
+            }
 
             let todaysDate = new Date().toLocaleDateString("en-US");
             let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -73,125 +107,67 @@ $(document).ready(function () {
     }
 
     function getLatLongFromVenueName(movieTheaterNames) {
-        // TODO: the following line is SAMPLE DATA
-        movieTheaterNames = ["theater 1 name", "theater 2 name", "theater 3 name"];
+        console.log("movieTheaterNames array on next line...");
+        console.log(movieTheaterNames);
+        infowindow = new google.maps.InfoWindow();
 
         for (let i = 0; i < movieTheaterNames.length; i++) {
+            console.log("getting location of: " + movieTheaterNames[i]);
             request = {
                 query: movieTheaterNames[i],
                 fields: ["name", "geometry"],
             };
+
             service = new google.maps.places.PlacesService(map);
 
             service.findPlaceFromQuery(request, function (results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     for (var i = 0; i < results.length; i++) {
-                        placeComplexMarker(results[i].geometry.location, results[i].name, "movie", "single");
-                    };
-                };
+                        createMarker(results[i]);
+                    }
+                }
             });
+
+            function createMarker(place) {
+                var marker = new google.maps.Marker({
+                    icon: "https://maps.gstatic.com/mapfiles/ms2/micons/blue.png",
+                    map: map,
+                    position: place.geometry.location,
+                    title: place.name
+                });
+
+                google.maps.event.addListener(marker, "click", function () {
+                    infowindow.setContent(place.name);
+                    infowindow.open(map, this);
+                });
+            };
         };
     };
     //#endregion
 
     //#region - markers
-    var venues = [];
-    //see https://developers.google.com/maps/documentation/javascript/examples/icon-complex
 
-    // Origins, anchor positions and coordinates of the marker increase in the X
-    // direction to the right and in the Y direction down.
-    setTimeout(function () { // this is a workaround for "Uncaught ReferenceError: google is not defined"
-        var imageRestaurant = {//TODO: one image for restaurants, another for movies
-            url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-            // This marker is 20 pixels wide by 32 pixels high.
-            size: new google.maps.Size(20, 32),
-            // The origin for this image is (0, 0).
-            origin: new google.maps.Point(0, 0),
-            // The anchor for this image is the base of the flagpole at (0, 32).
-            anchor: new google.maps.Point(0, 32)
-        };
-        var imageMovie = {//TODO: one image for restaurants, another for movies
-            url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-            // This marker is 20 pixels wide by 32 pixels high.
-            size: new google.maps.Size(20, 32),
-            // The origin for this image is (0, 0).
-            origin: new google.maps.Point(0, 0),
-            // The anchor for this image is the base of the flagpole at (0, 32).
-            anchor: new google.maps.Point(0, 32)
-        };
-
-        var imageUser = {//TODO: one image for restaurants, another for movies
-            url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-            // This marker is 20 pixels wide by 32 pixels high.
-            size: new google.maps.Size(20, 32),
-            // The origin for this image is (0, 0).
-            origin: new google.maps.Point(0, 0),
-            // The anchor for this image is the base of the flagpole at (0, 32).
-            anchor: new google.maps.Point(0, 32)
-        };
-    }, 5000);
-
-    //TODO: SAMPLE DATA - this array will be constructed on the fly
-    //each time multiple markers need to be set down. the following is
-    //sample data and should be deleted for production.
-    venues = [
-        ["Cocina Desmond", 35.8296462, -79.1090949, 1],
-        ["Willie's BBQ", 35.83, -79.11, 1],
-    ];
-
-    function placeMarker(theLatLong, title) { //this is the simple version
-        //which we may not use
-        var marker = new google.maps.Marker({
-            position: theLatLong,
-            map: map,
-            title: title
-        });
-    }
-
-    function placeComplexMarker(theLatLong, title, restaurantOrMovie, singleOrMultiple) {//see https://developers.google.com/maps/documentation/javascript/examples/icon-complex
-        // Marker sizes are expressed as a Size of X,Y where the origin of the image
-        // (0,0) is located in the top left of the image.
-
-        // Shapes define the clickable region of the icon. The type defines an HTML
-        // <area> element 'poly' which traces out a polygon as a series of X,Y points.
-        // The final coordinate closes the poly by connecting to the first coordinate.
-        var shape = {//TODO: question - hard-wire a single shape? use no shape?
-            coords: [1, 1, 1, 20, 18, 20, 18, 1],
-            type: 'poly'
-        };
+    function placeMarker(theLatLong, title, restaurantOrMovie, venues) {
 
         if (restaurantOrMovie = "restaurant") {
-            var image = imageRestaurant;
+            var icon = "https://maps.gstatic.com/mapfiles/ms2/micons/yellow.png";
         } else {
             if (restaurantOrMovie = "movie") {
-                var image = imageMovie;
-            } else {//it's the user's location
-                var image = imageUser;
+                var icon = "https://maps.gstatic.com/mapfiles/ms2/micons/blue.png";
+            } else {//it's the user's location. We're not using this presently
+                var icon = "https://maps.gstatic.com/mapfiles/ms2/micons/red.png";
             };
         };
-
-        if (singleOrMultiple = "single") {//number of markers to place
+        for (var i = 0; i < venues.length; i++) {
+            console.log("processing: " + venues[i]);
+            var venue = venues[i];
             var marker = new google.maps.Marker({
-                position: theLatLong,
+                position: { lat: parseFloat(venue[1]), lng: parseFloat(venue[2]) },
                 map: map,
-                icon: image,
-                shape: shape,
-                title: title,
-                // zIndex: zindex //we may or may not want to use this
+                icon: icon,
+                title: venue[0],
+                zIndex: venue[3] //we may or may not want to use this
             });
-        } else {
-            for (var i = 0; i < venues.length; i++) {//multiple needs a venues
-                //array, see sample data above
-                var venue = venues[i];
-                var marker = new google.maps.Marker({
-                    position: { lat: venue[1], lng: venue[2] },
-                    map: map,
-                    icon: image,
-                    shape: shape,
-                    title: venue[0],
-                    // zIndex: venue[3] //we may or may not want to use this
-                });
-            };
         };
     };
     //#endregion
@@ -206,6 +182,16 @@ $(document).ready(function () {
         //get current parameters
         var restaurantSelection = $("#inputFood").val().trim();
         var selectedTime = $("#inputTime").val().trim();
+        var priceSelected = []
+        $(".toggle").each(function (index) {
+            if ($(this).hasClass("btn-success")) {
+                priceSelected.push(index + 1)
+            }
+        });
+        if(priceSelected.length === 0){
+            priceSelected = [1,2,3,4];
+        }
+        console.log("SELECTED PRICE", priceSelected);
         console.log("restaurant" + restaurantSelection);
         console.log("time" + selectedTime);
         //format time for UNIX conversion
@@ -215,6 +201,7 @@ $(document).ready(function () {
         database.ref(userPreferencesPath).set({
             restaurantType: restaurantSelection,
             requestedTime: theSelectedTime,
+            priceRange: priceSelected.toString()
         });
         //clear the form
         $("#inputFood").val("");
@@ -276,13 +263,11 @@ $(document).ready(function () {
     });
 
     database.ref(userCoordinatesPath).on("value", function (snapshot) {
-        console.log
         console.log("user coordinates path value change " + userCoordinatesPath, userID);
         let theCurrentLat = snapshot.child(userCoordinatesPath + "/currentLat").val();
         let theCurrentLong = snapshot.child(userCoordinatesPath + "/currentLong").val();
         console.log("latlong from firebase: " + theCurrentLat, theCurrentLong);
         let userLatLong = { lat: theCurrentLat, lng: theCurrentLong };
-        placeComplexMarker(userLatLong, "You are here", "user", "single");
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
@@ -291,41 +276,44 @@ $(document).ready(function () {
         console.log("user preferences path value change " + userPreferencesPath, userID);
         let theRestaurantType = snapshot.child(userPreferencesPath + "/restaurantType").val();
         let theRequestedTime = snapshot.child(userPreferencesPath + "/requestedTime").val();
+        let priceRangeSelected = snapshot.child(userPreferencesPath + "/priceRange").val();
+        console.log("PRICE RANGE FROM FIREBASE", priceRangeSelected);
         console.log("userquery from firebase: " + theRestaurantType, theRequestedTime);
-        // theRequestedTime = moment(theRequestedTime, "M/D/YYYY HH:mm ").format("X");
+        theRequestedTime = moment(theRequestedTime, "M/D/YYYY HH:mm ").format("X");
         console.log("theRequestedTime: " + theRequestedTime);
         if (!gotRestaurantData && userLatitude) {
-            yelpAPICall(theRestaurantType, theRequestedTime);
+            yelpAPICall(theRestaurantType, theRequestedTime, priceRangeSelected);
         }
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
     });
 
-    // database.ref(userRestaurantPath).on("value", function (snapshot) {
-    //     console.log(snapshot.val());
-    // });
+    database.ref(userRestaurantPath).on("value", function (snapshot) {
+        console.log("restaurant snapshot on next line...");
+        console.log(snapshot.val());
+        var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
+        var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
+        var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
+        console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
+    });
     //#endregion
 
     //#region - yelp
 
-    // TODO: call placeComplexMarker(theLatLong, title, restaurantOrMovie, singleOrMultiple)
-
     // theLatLong is an object formatted like this: { lat: userLatitude, lng: userLongitude }
-    // NOTE: theLatLong is NOT NEEDED when placing multiple markers, but YOU MUST put 0 in its place
-
     // title is a string consisting of the venue name
     // NOTE: title is NOT NEEDED when placing multiple markers, but YOU MUST put "" in its place
-
     // values for restaurantOrMovie are "restaurant" or "movie"
     // values for singleOrMultiple are "single" or "multiple" (markers to place)
     // NOTE: when placing multiple markers, you must populate the array named "venues"
     // see bottom of this javascript file for a description of that array
 
-    function yelpAPICall(restaurantType, requestedTime) {
+    function yelpAPICall(restaurantType, requestedTime, priceRange) {
+        console.log("yelpAPICall user latLong on next line...");
         console.log(userLatitude + userLongitude);
         gotRestaurantData = true;
         var settings = {
-            "url": "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?term=" + restaurantType + "&latitude=" + userLatitude + "&longitude=" + userLongitude + "&open_at=" + requestedTime + "&limit=10",
+            "url": "https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search?term=" + restaurantType + "&latitude=" + userLatitude + "&longitude=" + userLongitude + "&open_at=" + requestedTime + "&price=" + priceRange + "&limit=10",
             "method": "GET",
             "timeout": 0,
             "headers": {
@@ -333,14 +321,22 @@ $(document).ready(function () {
             },
         };
         $.ajax(settings).done(function (response) {
+            console.log("yelpAPICall response and response.business on next two lines...");
             console.log(response);
             console.log(response.businesses)
             gotRestaurantData = true;
-            addRestaurants(response.businesses)
+            if (response.businesses.length < 1) {
+                var alertDiv = $("<div>").text("There are no restaurants matching that request. Bummer. Try another!");
+                $("#restaurant-table").append(alertDiv);
+            }
+            else {
+                addRestaurants(response.businesses)
+            }
         });
     }
 
     function addRestaurants(restaurantArray) {
+        venues = [];
         for (var i = 0; i < restaurantArray.length; i++) {
             var restaurant = restaurantArray[i];
             var newImage = $("<img src=" + restaurant.image_url + ">");
@@ -358,29 +354,13 @@ $(document).ready(function () {
             $("#restaurant-table").append(newRow);
             //push restaurant info to venues array for putting on map
             venues.push([restaurant.name, restaurant.coordinates.latitude, restaurant.coordinates.longitude, 1]);
-        }
+        };
+        console.log("addRestaurants venues on next line...");
         console.log(venues);
-    }
+        // placeMarker({ lat: 35.83, lng: -79.11 }, "", "restaurant", venues);
+        placeMarker(0, "", "restaurant", venues);
+    };
     //#endregion
-
-
-    // ---------------------------------------------------------------------------
-    // TODO: [X]Daniel/restaurants, and [ ]John/movies: Please make a function to
-    // get the necessary data out of your API responses and set the global array
-    // "venues" on the fly with the following format to put your venue locations on map.
-    //
-    // venues = [
-    //     ["restaurant name in double quotes", restaurant-latitude, restaurant-longitude, z-index],
-    //     ["another restaurant name", restaurant-latitude, restaurant-longitude, z-index],
-    // ];
-    //
-    // Here's some sample data:
-    // venues = [
-    //     ["Cocina Desmond", 35.8296462, -79.1090949, 1],
-    //     ["Willie's BBQ", 35.83, -79.11, 1],
-    // ];
-    // ---------------------------------------------------------------------------
-
 
     // ---------------------------------------------------------------------------
     // TODO: [ ]John/movies: Please make a function to get the movie theater
@@ -391,5 +371,64 @@ $(document).ready(function () {
     // then you just call getLatLongFromVenueName(movieTheaterNames) and I'll do
     // the rest
     // ---------------------------------------------------------------------------
+
+    //#region - testing
+    $(document).on("click", function (event) {
+        if (event.originalEvent.getModifierState("Alt")) {//if the alt or option key is pressed then
+            switch ($("#testing-wrapper").css("display")) {
+                case "none":
+                    $("#testing-wrapper").css("display", "block");
+                    $("#testing-input").val("Lumina Theatre, Chelsea Theater, Silverspot Cinema, Varsity Theatre, AMC Southpoint 17, Regal Cinemas Timberlyne 6, AMC CLASSIC Durham 15, Regal Cinemas Beaver Creek 12, Frank Theatres CineBowl & Grille, Imax, AMC Park Place 16, AMC DINE-IN Holly Springs 9, Park West 14, Regal Cinemas Brier Creek 14, Carmike Cinemas, Northgate Stadium 10, Cinemark Raleigh Grande, Phoenix Theatres 10, The Cary Theater, Historic Playmakers Theatre, Full Frame Theater, Regal Cinemas Crossroads 20 & IMAX, AMC Theater, The Carolina Theatre, CinéBistro, Shadowbox Studio, Regal Cinemas North Hills 14, AMC CLASSIC Blueridge 14, Frank Theatres Spring Lane Stadium 10");
+                    break;
+                case "block":
+                    $("#testing-wrapper").css("display", "none");
+                    break;
+            }
+        };
+    });
+
+    $(document).on('click', '.test-button', function (event) {
+        let theButton = event.target.id
+        // console.log(theButton);
+        switch (theButton) {
+            case "test-1":
+                testOne();
+                break;
+            case "test-2":
+                testTwo();
+                break;
+            case "test-3":
+                testThree();
+                break;
+        }
+    });
+
+    function testOne() {
+        console.log("this test is currently unused");
+    };
+    function testTwo() {
+        console.log("this test is currently unused");
+    };
+    function testThree() {
+        console.log("This test executes getLatLongFromVenueName. Expected input to that function");
+        console.log("is an array named 'movieTheaterNames' which gets created after");
+        console.log("processing the movies API and is formatted like this:");
+        console.log("['theater name', 'another theater name']");
+        console.log("To test, enter ONLY a comma-separated list of venue names. This test");
+        console.log("function will turn the comma-separated names into an array matching");
+        console.log("the format of movieTheaterNames and then submit it to getLatLongFromVenueName.");
+        console.log("Here is some sample data you can cut and paste:");
+        console.log("Lumina Theatre, Chelsea Theater, Silverspot Cinema, Varsity Theatre, AMC Southpoint 17, Regal Cinemas Timberlyne 6, AMC CLASSIC Durham 15, Regal Cinemas Beaver Creek 12, Frank Theatres CineBowl & Grille, Imax, AMC Park Place 16, AMC DINE-IN Holly Springs 9, Park West 14, Regal Cinemas Brier Creek 14, Carmike Cinemas, Northgate Stadium 10, Cinemark Raleigh Grande, Phoenix Theatres 10, The Cary Theater, Historic Playmakers Theatre, Full Frame Theater, Regal Cinemas Crossroads 20 & IMAX, AMC Theater, The Carolina Theatre, CinéBistro, Shadowbox Studio, Regal Cinemas North Hills 14, AMC CLASSIC Blueridge 14, Frank Theatres Spring Lane Stadium 10");
+        var theString = $("#testing-input").val();
+        testVarThree = Array.from((theString.split(", ")));
+        console.log("the array going to getLatLongFromVenueNames: " + testVarThree);
+        try {
+            getLatLongFromVenueName(testVarThree);
+        }
+        catch (err) {
+            console.log("testThree error: " + err.message);
+        }
+    };
+    //#endregion
 
 });
