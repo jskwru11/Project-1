@@ -320,9 +320,13 @@ $(document).ready(function () {
         console.log("entries-error: " + errorObject.code);
     });
 
-    // database.ref(userRestaurantPath).on("value", function (snapshot) {
-    //     console.log(snapshot.val());
-    // });
+    database.ref(userRestaurantPath).on("value", function (snapshot) {
+        console.log(snapshot.val());
+        var restaurantName  = snapshot.child(userRestaurantPath + "/name").val();
+        var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
+        var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
+        console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
+    });
     //#endregion
 
     //#region - yelp
