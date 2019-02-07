@@ -370,6 +370,7 @@ $(document).ready(function () {
             switch ($("#testing-wrapper").css("display")) {
                 case "none":
                     $("#testing-wrapper").css("display", "block");
+                    $("#testing-input").val("Lumina Theatre, Chelsea Theater, Silverspot Cinema, Varsity Theatre, AMC Southpoint 17, Regal Cinemas Timberlyne 6, AMC CLASSIC Durham 15, Regal Cinemas Beaver Creek 12, Frank Theatres CineBowl & Grille, Imax, AMC Park Place 16, AMC DINE-IN Holly Springs 9, Park West 14, Regal Cinemas Brier Creek 14, Carmike Cinemas, Northgate Stadium 10, Cinemark Raleigh Grande, Phoenix Theatres 10, The Cary Theater, Historic Playmakers Theatre, Full Frame Theater, Regal Cinemas Crossroads 20 & IMAX, AMC Theater, The Carolina Theatre, CinéBistro, Shadowbox Studio, Regal Cinemas North Hills 14, AMC CLASSIC Blueridge 14, Frank Theatres Spring Lane Stadium 10");
                     break;
                 case "block":
                     $("#testing-wrapper").css("display", "none");
@@ -408,7 +409,8 @@ $(document).ready(function () {
         console.log("To test, enter ONLY a comma-separated list of venue names. This test");
         console.log("function will turn the comma-separated names into an array matching");
         console.log("the format of movieTheaterNames and then submit it to getLatLongFromVenueName.");
-        console.log("Here is some sample data you can cut and paste: Lumina Theatre, Babymoon Cafe");
+        console.log("Here is some sample data you can cut and paste:");
+        console.log("Lumina Theatre, Chelsea Theater, Silverspot Cinema, Varsity Theatre, AMC Southpoint 17, Regal Cinemas Timberlyne 6, AMC CLASSIC Durham 15, Regal Cinemas Beaver Creek 12, Frank Theatres CineBowl & Grille, Imax, AMC Park Place 16, AMC DINE-IN Holly Springs 9, Park West 14, Regal Cinemas Brier Creek 14, Carmike Cinemas, Northgate Stadium 10, Cinemark Raleigh Grande, Phoenix Theatres 10, The Cary Theater, Historic Playmakers Theatre, Full Frame Theater, Regal Cinemas Crossroads 20 & IMAX, AMC Theater, The Carolina Theatre, CinéBistro, Shadowbox Studio, Regal Cinemas North Hills 14, AMC CLASSIC Blueridge 14, Frank Theatres Spring Lane Stadium 10");
         var theString = $("#testing-input").val();
         testVarThree = Array.from((theString.split(", ")));
         console.log("the array going to getLatLongFromVenueNames: " + testVarThree);
