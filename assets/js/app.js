@@ -1,4 +1,4 @@
-console.log("v1.36"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+console.log("v1.365"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 
 var map;
 var userLatitude;
@@ -74,7 +74,7 @@ $(document).ready(function () {
 
     function getLatLongFromVenueName(movieTheaterNames) {
         // TODO: the following line is SAMPLE DATA
-        movieTheaterNames = ["theater 1 name", "theater 2 name", "theater 3 name"];
+        // movieTheaterNames = ["theater 1 name", "theater 2 name", "theater 3 name"];
 
         for (let i = 0; i < movieTheaterNames.length; i++) {
             request = {
@@ -84,10 +84,15 @@ $(document).ready(function () {
             service = new google.maps.places.PlacesService(map);
 
             service.findPlaceFromQuery(request, function (results, status) {
+                console.log("in findPlaceFromQuery");
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    console.log("status okay");
                     for (var i = 0; i < results.length; i++) {
+                        console.log(results[i].name);
                         placeComplexMarker(results[i].geometry.location, results[i].name, "movie", "single");
                     };
+                } else {
+                    console.log(google.maps.places.PlacesServiceStatus);
                 };
             });
         };
@@ -211,13 +216,13 @@ $(document).ready(function () {
         var restaurantSelection = $("#inputFood").val().trim();
         var selectedTime = $("#inputTime").val().trim();
         var priceSelected = []
-        $(".toggle").each(function(index){
-            if( $(this).hasClass("btn-success")){
-                priceSelected.push(index +1)
-            } 
+        $(".toggle").each(function (index) {
+            if ($(this).hasClass("btn-success")) {
+                priceSelected.push(index + 1)
+            }
         });
         console.log("PRICES SELECTED ARRAY", priceSelected)
-        console.log("SELECTED PRICE",priceSelected);
+        console.log("SELECTED PRICE", priceSelected);
         console.log("restaurant" + restaurantSelection);
         console.log("time" + selectedTime);
         //format time for UNIX conversion
@@ -289,7 +294,6 @@ $(document).ready(function () {
     });
 
     database.ref(userCoordinatesPath).on("value", function (snapshot) {
-        console.log
         console.log("user coordinates path value change " + userCoordinatesPath, userID);
         let theCurrentLat = snapshot.child(userCoordinatesPath + "/currentLat").val();
         let theCurrentLong = snapshot.child(userCoordinatesPath + "/currentLong").val();
@@ -352,13 +356,13 @@ $(document).ready(function () {
             console.log(response);
             console.log(response.businesses)
             gotRestaurantData = true;
-            if(response.businesses.length < 1) {
+            if (response.businesses.length < 1) {
                 var alertDiv = $("<div>").text("There are no restaurants matching that request. Bummer. Try another!");
                 $("#restaurant-table").append(alertDiv);
             }
-            else{
-            addRestaurants(response.businesses)
-        }
+            else {
+                addRestaurants(response.businesses)
+            }
         });
     }
 
@@ -382,7 +386,9 @@ $(document).ready(function () {
             //push restaurant info to venues array for putting on map
             venues.push([restaurant.name, restaurant.coordinates.latitude, restaurant.coordinates.longitude, 1]);
         };
-        placeComplexMarker(0, "", "restaurant", multiple, venues);
+        placeComplexMarker({ lat: 35.83, lng: -79.11 }, "", "restaurant", "multiple", venues);
+        // the latLong in this call is moot because we're doing multiple venues,
+        // but it must be there
         console.log(venues);
     }
     //#endregion
@@ -392,7 +398,7 @@ $(document).ready(function () {
     // TODO: [X]Daniel/restaurants: Please make a function to
     // get the necessary data out of your API responses and set the global array
     // "venues" on the fly with the following format to put your venue locations
-    // on map, then call placeComplexMarker(0, "", "restaurant", multiple, venues);
+    // on map, then call placeComplexMarker({ lat: 35.83, lng: -79.11 }, "", "restaurant", "multiple", venues);
     //
     // venues = [
     //     ["restaurant name in double quotes", restaurant-latitude, restaurant-longitude, z-index],
@@ -457,7 +463,7 @@ $(document).ready(function () {
         console.log("executes placeComplexMarker - expected input is the array 'venues' after processing the Yelp API");
         console.log("paste the array-only in the input field. declaring 'venues =...' is not needed.");
         var testVarTwo = $("#testing-input").val();
-        placeComplexMarker(0, "", "restaurant", "multiple", testVarTwo);
+        placeComplexMarker(testVarTwo);
     };
     function testThree() {
         console.log("executes getLatLongFromVenueName - expected input is the array 'movieTheaterNames' after processing the movies API");
