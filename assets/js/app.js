@@ -182,7 +182,9 @@ $(document).ready(function () {
                 priceSelected.push(index + 1)
             }
         });
-        console.log("PRICES SELECTED ARRAY", priceSelected)
+        if(priceSelected.length === 0){
+            priceSelected = [1,2,3,4];
+        }
         console.log("SELECTED PRICE", priceSelected);
         console.log("restaurant" + restaurantSelection);
         console.log("time" + selectedTime);
@@ -420,4 +422,13 @@ $(document).ready(function () {
         }
     };
     //#endregion
+
+    //"markers" is an array that I declared which contains all the marker of the map
+//"i" is the index of the marker in the array that I want to trigger the OnClick event
+
+// //V2 version is:
+// GEvent.trigger(markers[i], 'click');
+
+// //V3 version is:
+// google.maps.event.trigger(markers[i], 'click');
 });
