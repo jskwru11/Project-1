@@ -305,13 +305,12 @@ $(document).ready(function () {
         let theRestaurantType = snapshot.child(userPreferencesPath + "/restaurantType").val();
         let theRequestedTime = snapshot.child(userPreferencesPath + "/requestedTime").val();
         let priceRangeSelected = snapshot.child(userPreferencesPath + "/priceRange").val();
-        var numberDollarSigns = priceRangeSelected.length;
         console.log("PRICE RANGE FROM FIREBASE", priceRangeSelected);
         console.log("userquery from firebase: " + theRestaurantType, theRequestedTime);
         theRequestedTime = moment(theRequestedTime, "M/D/YYYY HH:mm ").format("X");
         console.log("theRequestedTime: " + theRequestedTime);
         if (!gotRestaurantData && userLatitude) {
-            yelpAPICall(theRestaurantType, theRequestedTime, numberDollarSigns);
+            yelpAPICall(theRestaurantType, theRequestedTime, priceRangeSelected);
         }
     }, function (errorObject) {
         console.log("entries-error: " + errorObject.code);
