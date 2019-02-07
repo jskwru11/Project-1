@@ -423,12 +423,4 @@ $(document).ready(function () {
     };
     //#endregion
 
-    //"markers" is an array that I declared which contains all the marker of the map
-//"i" is the index of the marker in the array that I want to trigger the OnClick event
-
-// //V2 version is:
-// GEvent.trigger(markers[i], 'click');
-
-// //V3 version is:
-// google.maps.event.trigger(markers[i], 'click');
 });
