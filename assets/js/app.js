@@ -469,7 +469,12 @@ $(document).ready(function () {
         console.log("executes getLatLongFromVenueName - expected input is the array 'movieTheaterNames' after processing the movies API");
         console.log("paste the array-only in the input field. declaring 'movieTheaterNames = ...' is not needed.");
         var testVarThree = $("#testing-input").val();
-        getLatLongFromVenueName(testVarThree);
+        try {
+            getLatLongFromVenueName(testVarThree);
+        }
+        catch (err) {
+            console.log("testThree error: " + err.message);
+        }
     };
     //#endregion
 });
