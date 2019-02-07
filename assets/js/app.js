@@ -207,7 +207,6 @@ $(document).ready(function () {
     function placeComplexMarker(theLatLong, title, restaurantOrMovie, singleOrMultiple, venues) {//see https://developers.google.com/maps/documentation/javascript/examples/icon-complex
         // Marker sizes are expressed as a Size of X,Y where the origin of the image
         // (0,0) is located in the top left of the image.
-
         // Shapes define the clickable region of the icon. The type defines an HTML
         // <area> element 'poly' which traces out a polygon as a series of X,Y points.
         // The final coordinate closes the poly by connecting to the first coordinate.
