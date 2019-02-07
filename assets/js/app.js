@@ -13,7 +13,6 @@ var userIdentificationPath;
 var userCoordinatesPath;
 var userPreferencesPath;
 var userRestaurantPath;
-let moviesArray = [];
 
 //#region - firebase authentication
 var config = {
@@ -49,7 +48,14 @@ function initMap() {
             });
 
             infowindow = new google.maps.InfoWindow();
+
+            // request = {
+            //     query: "Zen Motorcycle Maintenance",
+            //     fields: ["name", "geometry"],
+            // };
+
             service = new google.maps.places.PlacesService(map);
+
             service.findPlaceFromQuery(request, function (results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     for (var i = 0; i < results.length; i++) {
@@ -141,9 +147,7 @@ $(document).ready(function () {
     //#endregion
 
     //#region - markers
-
     function placeMarker(theLatLong, title, restaurantOrMovie, venues) {
-
         if (restaurantOrMovie = "restaurant") {
             var icon = "https://maps.gstatic.com/mapfiles/ms2/micons/yellow.png";
         } else {
@@ -282,16 +286,11 @@ $(document).ready(function () {
     });
 
     database.ref(userRestaurantPath).on("value", function (snapshot) {
-        const selectedRestLoc = {};
         console.log("restaurant snapshot on next line...");
         console.log(snapshot.val());
         var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
         var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
         var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
-        selectedRestLoc.lat = restaurantLat;
-        selectedRestLoc.lng = restaurantLong;
-        moviesArray=  moviesArray.push(getData(selectedRestLoc));
-        console.log(`this is the movie theatre array: ${moviesArray}`);
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
     });
     //#endregion
