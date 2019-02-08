@@ -47,7 +47,6 @@ const getData = (loc) => {
 
 
 
-
 // user + uid + restaurants . restaurant.Lat, restaurant.Long
 
 // dateTime: "2019-02-02T12:20"

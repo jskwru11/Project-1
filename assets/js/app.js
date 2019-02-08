@@ -275,16 +275,24 @@ $(document).ready(function () {
     });
 
     database.ref(userRestaurantPath).on("value", function (snapshot) {
+        // const selectedRestLoc = {};
         if (rowHasBeenSelected) {
             console.log("restaurant snapshot on next line...");
             console.log(snapshot.val());
             var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
             var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
             var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
+            // selectedRestLoc.lat = restaurantLat;
+            // selectedRestLoc.lng = restaurantLong;
+            // console.log(selectedRestLoc);
+            // moviesArray = getData(selectedRestLoc);
+            // movieTheaterNames = getData(selectedRestLoc);
+            // console.log(movieTheaterNames);
+
             console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
+            // getLatLongFromVenueName(movieTheaterNames);
             rowHasBeenSelected = false;
         };
-
     });
     function doMoviesFailsafe() {
         console.log("doing movies failsafe");
