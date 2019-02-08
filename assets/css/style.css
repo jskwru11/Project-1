@@ -29,9 +29,15 @@ h1 {
 }
 
 .restaurant-pic {
-    height: 80px;
+    height: 20px;
 }
 
+.restaurant-name {
+    text-align: left;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 #testing-wrapper {
     display: none;
@@ -58,4 +64,8 @@ h1 {
     margin: 0 10px 0 10px;
     padding: 5px;
 
+}
+
+.map-wrapper {
+    height: 400px;
 }
