@@ -36,8 +36,10 @@
         })
     };
     
+    $('#clickMe').on('click', getData);
 
-
+    const newDate = moment("2019-02-02T10:45").format('MMMM Do, YYYY hh:mm a');
+    console.log(newDate);
 
 // user + uid + restaurants . restaurant.Lat, restaurant.Long
 
