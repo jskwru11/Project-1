@@ -225,6 +225,8 @@ $(document).ready(function () {
             restaurantImg: restaurantPic,
             name: restaurantName
         });
+        $(this).addClass("selected-restaurant")
+        $(".restaurant-row").not($(this)).remove();
     });
     //#endregion
 
@@ -293,6 +295,7 @@ $(document).ready(function () {
         var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
         var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
         var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
+
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
     });
     //#endregion
