@@ -18,24 +18,23 @@
     
     const getData = (loc) => {
         const theatreNames = [];
-        
         $.get(encodeURL(dateNow, loc, radius)).then(res => {
+            let data;
             console.log('api data fetched');
-            // console.log(res)
-            res.map(results => {
-                results.showtimes.map(theatre => {
-                    if (theatreNames.indexOf(theatre.theatre.name) === -1) {
-                        theatreNames.push(theatre.theatre.name)
-                    }
-                    
-                });
-                return theatreNames;
+            data = res.map(data => data.showtimes);
+            data.forEach(results => {
+                results.forEach(theatre => {
+                    if (theatreNames.indexOf(theatre.theatre.name) === -1)
+                    theatreNames.push(theatre.theatre.name);
+                    })
+                })
             })
-        }).catch(error => {
+            .catch(error => {
             console.log(`You have encountered an error: ${error}`)
-        })
-    };
-    
+        });
+        return theatreNames;
+}
+        
 
 
 
