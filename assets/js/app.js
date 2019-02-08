@@ -34,15 +34,9 @@ function initMap() {
     if (userLatitude != undefined && userLongitude != undefined) {
         setTimeout(function () {
             console.log("init map: " + userLatitude, userLongitude);
-<<<<<<< HEAD
-            initMapLatLong = userLatitude, userLongitude;  // 35.8575, -74.3657
-            let userLatLong = { lat: userLatitude, lng: userLongitude }; // { lat: 35.8575, lng: -74.3657 }
-            let zoom = 16
-=======
             initMapLatLong = userLatitude, userLongitude;
             var userLatLong = { lat: userLatitude, lng: userLongitude };
             var zoom = 11;
->>>>>>> 65e6294a57c8993db4b2c0377df40bc7e9227b9e
             map = new google.maps.Map(document.getElementById("map"), {
                 zoom: zoom, // 16
                 center: userLatLong // { lat: 35.8575, lng: -74.3657 }

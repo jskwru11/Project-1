@@ -12,17 +12,6 @@
     <script src="assets/js/app.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
     <link rel="stylesheet" href="assets/css/style.css">
-<<<<<<< HEAD
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPchfMQ9Do2TWSFQTKjKJlitT5y_Fdrdc&libraries=places&callback=initMap">
-    </script>
-
-    <script type="text/javascript">
-        $(window).on('load',function(){
-            $('#myModal').modal('show');
-        });
-    </script>
-    
-=======
 
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPchfMQ9Do2TWSFQTKjKJlitT5y_Fdrdc&libraries=places&callback=initMap">
@@ -30,7 +19,6 @@
 
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
->>>>>>> 65e6294a57c8993db4b2c0377df40bc7e9227b9e
     <style>
         /* Always set the map height explicitly to define the size of the div
            * element that contains the map. */
@@ -78,7 +66,6 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-
                     <div class="modal-body">
                         <form id="restaurant-form">
                             <div class="form-group row">
@@ -94,23 +81,8 @@
                                     <input type="time" class="form-control" id="inputTime">
                                 </div>
                             </div>
-                            <!-- <div class="form-group row">
-                                    <div class="col-sm-12">
-                                    <div class="input-group">
-                                            <div class="input-group-prepend">
-                                              <span class="input-group-text" id="">Filter by Price</span>
-                                            </div>
-                                            <input type="checkbox"  data-toggle="toggle" data-on="$" data-off="$" data-onstyle="success" data-offstyle="default">
-                                            <input type="checkbox"  data-toggle="toggle" data-on="$$" data-off="$$" data-onstyle="success" data-offstyle="default">
-                                            <input type="checkbox"  data-toggle="toggle" data-on="$$$" data-off="$$$" data-onstyle="success" data-offstyle="default">
-                                            <input type="checkbox"  data-toggle="toggle" data-on="$$$$" data-off="$$$$" data-onstyle="success" data-offstyle="default">
-                                        </div>
-                                    </div>
-                            </div> -->
                             <div class="form-group row">
-
                                 <label for="checkboxes" class="col-sm-3 col-form-label">Filter by Price</label>
-
                                 <div class="col-sm-9">
                                     <label class="checkbox-inline">
                                         <input class="price-selectors" type="checkbox" data-toggle="toggle" data-on="$"
@@ -142,26 +114,36 @@
             </div>
         </div>
     </div>
-    <div id="map"></div>
-    <div id="table">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <table class="table table-hover">
-                        <tbody id="restaurant-table">
-                        </tbody>
-                    </table>
+
+    <!-- main container -->
+    <div class="container text-center">
+        <div class="row map-wrapper">
+            <div class="col-md-5">
+                <div id="table">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-hover">
+                                    <tbody id="restaurant-table">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div class="col-md-7">
+                <div id="map"></div>
+            </div>
+            <div id="testing-wrapper" class="testing">
+                <div id="testing-buttons" class="testing"><button id="test-1" type="button"
+                        class="test-button">[unused]</button><button id="test-2" type="button"
+                        class="test-button">[unused]</button><button id="test-3" type="button" class="test-button">do
+                        getLatLongFromVenueName</button></div>
+                <textarea id="testing-input" class="testing"></textarea>
+                <div id="testing-display" class="testing"></div>
+            </div>
         </div>
-    </div>
-    <div id="testing-wrapper" class="testing">
-        <div id="testing-buttons" class="testing"><button id="test-1" type="button"
-                class="test-button">[unused]</button><button id="test-2" type="button"
-                class="test-button">[unused]</button><button id="test-3" type="button" class="test-button">do
-                getLatLongFromVenueName</button></div>
-        <textarea id="testing-input" class="testing"></textarea>
-        <div id="testing-display" class="testing"></div>
     </div>
 </body>
 
