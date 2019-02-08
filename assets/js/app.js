@@ -1,4 +1,4 @@
-console.log("v1.479"); //this is updated so you can see when GitHub
+console.log("v1.412"); //this is updated so you can see when GitHub
 // has actually deployed your code.This is necessary for testing
 // stuff with CORS limitations(like Google Maps)
 
@@ -15,8 +15,8 @@ var userIdentificationPath;
 var userCoordinatesPath;
 var userPreferencesPath;
 var userRestaurantPath;
-let moviesArray = [];
 var rowHasBeenSelected = false;
+let moviesAPI;
 
 //#region - firebase authentication
 var config = {
@@ -204,12 +204,12 @@ $(document).ready(function () {
         var restaurantName = $(this).children(".restaurant-name").text();
         console.log("name: " + restaurantName);
         rowHasBeenSelected = true;
-        selectedRestLoc.lat = parseFloat(restaurantLatitude);
-        selectedRestLoc.lng = parseFloat(restaurantLongitude);
-        console.log(selectedRestLoc);
-        moviesArray = getData(selectedRestLoc);
-        console.log(moviesArray);
-        getLatLongFromVenueName(moviesArray);
+        selectedRestLoc.lat = restaurantLatitude;
+        selectedRestLoc.lng = restaurantLongitude;
+        // Call graceNote API to create theater names array
+        moviesAPI = getData(selectedRestLoc);
+        // pass array to google map function
+        moviesAPI.then(res => getLatLongFromVenueName(res));
         database.ref(userRestaurantPath).set({
             restaurantLat: restaurantLatitude,
             restaurantLong: restaurantLongitude,
@@ -275,27 +275,23 @@ $(document).ready(function () {
     });
 
     database.ref(userRestaurantPath).on("value", function (snapshot) {
-        if (rowHasBeenSelected) {
-            console.log("restaurant snapshot on next line...");
-            console.log(snapshot.val());
-            var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
-            var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
-            var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
-            // selectedRestLoc.lat = restaurantLat;
-            // selectedRestLoc.lng = restaurantLong;
+        // const selectedRestLoc = {};
+  if (rowHasBeenSelected) {
+        console.log("restaurant snapshot on next line...");
+        console.log(snapshot.val());
+        var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
+        var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
+        var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
+        // selectedRestLoc.lat = restaurantLat;
+        // selectedRestLoc.lng = restaurantLong;
+        // console.log(selectedRestLoc);
+        // moviesArray = getData(selectedRestLoc);
+        // movieTheaterNames = getData(selectedRestLoc);
+        // console.log(movieTheaterNames);
 
-            // console.log("selectedRestLoc on next line:");
-            // console.log(selectedRestLoc);
-            // moviesArray = getData(selectedRestLoc);
-            // console.log("moviesArray on next line:");
-            // console.log(moviesArray);
-            console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
-            if (moviesArray.length > 0) {
-                getLatLongFromVenueName(moviesArray);
-            } else {
-                doMoviesFailsafe();
-            }
-            rowHasBeenSelected = false;
+        console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
+        // getLatLongFromVenueName(movieTheaterNames);
+                rowHasBeenSelected = false;
         };
     });
     function doMoviesFailsafe() {
