@@ -13,7 +13,7 @@ var userIdentificationPath;
 var userCoordinatesPath;
 var userPreferencesPath;
 var userRestaurantPath;
-const theatreNames = [];
+const moviesAPI;
 
 
 //#region - firebase authentication
@@ -236,9 +236,9 @@ $(document).ready(function () {
         selectedRestLoc.lat = restaurantLatitude;
         selectedRestLoc.lng = restaurantLongitude;
         // Call graceNote API to create theater names array
-        getData(selectedRestLoc);
+        moviesAPI = getData(selectedRestLoc);
         // pass array to google map function
-        getLatLongFromVenueName(theatreNames);
+        moviesAPI.then(res => getLatLongFromVenueName(res));
         database.ref(userRestaurantPath).set({
             restaurantLat: restaurantLatitude,
             restaurantLong: restaurantLongitude,

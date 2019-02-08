@@ -19,21 +19,26 @@
     }
     
     const getData = (loc) => {
-        $.get(encodeURL(dateNow, loc, radius)).then(res => {
-            let data;
-            console.log('api data fetched');
-            data = res.map(data => data.showtimes);
-            data.forEach(results => {
-                results.forEach(theatre => {
-                    if (theatreNames.indexOf(theatre.theatre.name) === -1)
-                    theatreNames.push(theatre.theatre.name);
-                    })
-                })
-            })
-            .catch(error => {
-            console.log(`You have encountered an error: ${error}`)
+        const theatreNames = [];
+        return new Promise((resolve, reject) => {
+              $.get(encodeURL(dateNow, loc, radius)).then(res => {
+             let data;
+             console.log('api data fetched');
+             data = res.map(data => data.showtimes);
+             data.forEach(results => {
+                 results.forEach(theatre => {
+                     if (theatreNames.indexOf(theatre.theatre.name) === -1)
+                     theatreNames.push(theatre.theatre.name);
+                 })
+             })
+             resolve(theatreNames);
+         })
+         .catch(error => {
+             reject(error);
+             console.log(`You have encountered an error: ${error}`)
+     });
         });
-}
+     };
 
         
 
