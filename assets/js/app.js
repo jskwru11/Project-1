@@ -317,9 +317,9 @@ $(document).ready(function () {
         var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
         // selectedRestLoc.lat = restaurantLat;
         // selectedRestLoc.lng = restaurantLong;
-        console.log(selectedRestLoc);
+        // console.log(selectedRestLoc);
         // moviesArray = getData(selectedRestLoc);
-        console.log(moviesArray);
+        // console.log(moviesArray);
 
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
         // getLatLongFromVenueName(moviesArray);
