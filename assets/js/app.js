@@ -13,7 +13,7 @@ var userIdentificationPath;
 var userCoordinatesPath;
 var userPreferencesPath;
 var userRestaurantPath;
-const moviesAPI;
+let moviesAPI;
 
 
 //#region - firebase authentication
