@@ -38,8 +38,8 @@ function initMap() {
             var userLatLong = { lat: userLatitude, lng: userLongitude };
             var zoom = 11;
             map = new google.maps.Map(document.getElementById("map"), {
-                zoom: zoom, // 16
-                center: userLatLong // { lat: 35.8575, lng: -74.3657 }
+                zoom: zoom,
+                center: userLatLong
             });
             var marker = new google.maps.Marker({
                 position: userLatLong,
