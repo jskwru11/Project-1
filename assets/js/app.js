@@ -1,4 +1,6 @@
-console.log("v1.3977"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+console.log("v1.479"); //this is updated so you can see when GitHub
+// has actually deployed your code.This is necessary for testing
+// stuff with CORS limitations(like Google Maps)
 
 var map;
 var userLatitude;
@@ -13,7 +15,8 @@ var userIdentificationPath;
 var userCoordinatesPath;
 var userPreferencesPath;
 var userRestaurantPath;
-var moviesArray = [];
+let moviesArray = [];
+var rowHasBeenSelected = false;
 
 //#region - firebase authentication
 var config = {
@@ -147,7 +150,7 @@ $(document).ready(function () {
         event.preventDefault();
         gotRestaurantData = false;
         //clear previous results
-        $("#restaurant-table").empty();
+        $("#restaurant-table").html("<em><strong>Loading restaurant data...</strong></em>");
         //get current parameters
         var restaurantSelection = $("#inputFood").val().trim();
         var selectedTime = $("#inputTime").val().trim();
@@ -187,6 +190,7 @@ $(document).ready(function () {
     });
     //on-click event for restaurant selection 
     $(document).on("click", ".restaurant-row", function () {
+        const selectedRestLoc = {};
         console.log("i've been clicked");
         var restaurantLongitude = $(this).attr("data-longitude");
         var restaurantLatitude = $(this).attr("data-latitude");
@@ -199,6 +203,13 @@ $(document).ready(function () {
         console.log("src: " + restaurantPic);
         var restaurantName = $(this).children(".restaurant-name").text();
         console.log("name: " + restaurantName);
+        rowHasBeenSelected = true;
+        selectedRestLoc.lat = parseFloat(restaurantLatitude);
+        selectedRestLoc.lng = parseFloat(restaurantLongitude);
+        console.log(selectedRestLoc);
+        moviesArray = getData(selectedRestLoc);
+        console.log(moviesArray);
+        getLatLongFromVenueName(moviesArray);
         database.ref(userRestaurantPath).set({
             restaurantLat: restaurantLatitude,
             restaurantLong: restaurantLongitude,
@@ -206,14 +217,6 @@ $(document).ready(function () {
             name: restaurantName
         });
         $(".restaurant-row").not($(this)).remove();
-        // the following three lines give us basic movie theater location results for
-        // the area around Morrisville, NC.This is a temporary measure until graceNote
-        // is fully incorporated.
-        theString = "Park West, Regal Cinemas Crossroads 20 & IMAX, AMC DINE-IN Holly Springs, CinéBistro, Frank Theatres CineBowl & Grille, AMC Park Place, The Cary Theater, Regal Cinemas Beaver Creek, AMC Theater, Carmike Cinemas, Cinemark Raleigh Grande, Regal Cinemas Brier Creek, AMC Southpoint, AMC CLASSIC Blueridge, Mission Valley Cinema, Imax, Silverspot Cinema, Regal Cinemas North Hills, AMC CLASSIC Durham, Lumina Theatre, Chelsea Theater, Silverspot Cinema, Varsity Theatre, AMC Southpoint 17, Regal Cinemas Timberlyne 6, AMC CLASSIC Durham 15, Regal Cinemas Beaver Creek 12, Frank Theatres CineBowl & Grille, Imax, AMC Park Place 16, AMC DINE-IN Holly Springs 9, Park West 14, Regal Cinemas Brier Creek 14, Carmike Cinemas, Northgate Stadium 10, Cinemark Raleigh Grande, Phoenix Theatres 10, The Cary Theater, Historic Playmakers Theatre, Full Frame Theater, Regal Cinemas Crossroads 20 & IMAX, AMC Theater, The Carolina Theatre, CinéBistro, Shadowbox Studio, Regal Cinemas North Hills 14, AMC CLASSIC Blueridge 14, Frank Theatres Spring Lane Stadium 10";
-        moviesArray = Array.from((theString.split(", ")))
-        setTimeout(function () {
-            getLatLongFromVenueName(moviesArray);
-        }, 500);
     });
     //#endregion
 
@@ -272,19 +275,40 @@ $(document).ready(function () {
     });
 
     database.ref(userRestaurantPath).on("value", function (snapshot) {
-        const selectedRestLoc = {};
-        console.log("restaurant snapshot on next line...");
-        console.log(snapshot.val());
-        var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
-        var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
-        var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
-        selectedRestLoc.lat = restaurantLat;
-        selectedRestLoc.lng = restaurantLong;
-        // moviesArray = moviesArray.push(getData(selectedRestLoc));
-        // console.log(`this is the movie theatre array: ${moviesArray}`);
-        console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
-        getLatLongFromVenueName(moviesArray);
+        if (rowHasBeenSelected) {
+            console.log("restaurant snapshot on next line...");
+            console.log(snapshot.val());
+            var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
+            var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
+            var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
+            // selectedRestLoc.lat = restaurantLat;
+            // selectedRestLoc.lng = restaurantLong;
+
+            // console.log("selectedRestLoc on next line:");
+            // console.log(selectedRestLoc);
+            // moviesArray = getData(selectedRestLoc);
+            // console.log("moviesArray on next line:");
+            // console.log(moviesArray);
+            console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
+            if (moviesArray.length > 0) {
+                getLatLongFromVenueName(moviesArray);
+            } else {
+                doMoviesFailsafe();
+            }
+            rowHasBeenSelected = false;
+        };
     });
+    function doMoviesFailsafe() {
+        console.log("doing movies failsafe");
+        // this is a fail-safe in case moviesArray above is empty.
+        // the following five lines give us basic movie theater location
+        // results for the area around Morrisville, NC.
+        theString = "Park West, Regal Cinemas Crossroads 20 & IMAX, AMC DINE-IN Holly Springs, CinéBistro, Frank Theatres CineBowl & Grille, AMC Park Place, The Cary Theater, Regal Cinemas Beaver Creek, AMC Theater, Carmike Cinemas, Cinemark Raleigh Grande, Regal Cinemas Brier Creek, AMC Southpoint, AMC CLASSIC Blueridge, Mission Valley Cinema, Imax, Silverspot Cinema, Regal Cinemas North Hills, AMC CLASSIC Durham, Lumina Theatre, Chelsea Theater, Silverspot Cinema, Varsity Theatre, AMC Southpoint 17, Regal Cinemas Timberlyne 6, AMC CLASSIC Durham 15, Regal Cinemas Beaver Creek 12, Frank Theatres CineBowl & Grille, Imax, AMC Park Place 16, AMC DINE-IN Holly Springs 9, Park West 14, Regal Cinemas Brier Creek 14, Carmike Cinemas, Northgate Stadium 10, Cinemark Raleigh Grande, Phoenix Theatres 10, The Cary Theater, Historic Playmakers Theatre, Full Frame Theater, Regal Cinemas Crossroads 20 & IMAX, AMC Theater, The Carolina Theatre, CinéBistro, Shadowbox Studio, Regal Cinemas North Hills 14, AMC CLASSIC Blueridge 14, Frank Theatres Spring Lane Stadium 10";
+        moviesArray = Array.from((theString.split(", ")))
+        setTimeout(function () {
+            getLatLongFromVenueName(moviesArray);
+        }, 500);
+    }
     //#endregion
 
     //#region - yelp
@@ -305,6 +329,7 @@ $(document).ready(function () {
             console.log(response);
             console.log(response.businesses)
             gotRestaurantData = true;
+            $("#restaurant-table").empty();
             if (response.businesses.length < 1) {
                 var alertDiv = $("<div>").text("There are no restaurants matching that request. Bummer. Try another!");
                 $("#restaurant-table").append(alertDiv);
@@ -410,5 +435,4 @@ $(document).ready(function () {
         }
     };
     //#endregion
-
 });
