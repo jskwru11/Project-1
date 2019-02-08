@@ -1,89 +1,90 @@
-console.log("v1.385"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
-
-var map;
-var userLatitude;
-var userLongitude;
-var initMapLatLong;
-var gotRestaurantData = true;
-var service;
-var infowindow;
-var request;
-var movieTheaterNames;
-var userIdentificationPath;
-var userCoordinatesPath;
-var userPreferencesPath;
-var userRestaurantPath;
-const moviesArray = [];
-
-//#region - firebase authentication
-var config = {
-    apiKey: "AIzaSyDJjHXFsfWA5UNS_7-aWWB0IUt7pTEXr7E",
-    authDomain: "dsm-group-project-1.firebaseapp.com",
-    databaseURL: "https://dsm-group-project-1.firebaseio.com",
-    projectId: "dsm-group-project-1",
-    storageBucket: "dsm-group-project-1.appspot.com",
-    messagingSenderId: "729543680357"
-};
-firebase.initializeApp(config);
-
-var database = firebase.database();
-var connectionsRef = database.ref("/connections");
-var connectedRef = database.ref(".info/connected");
-//#endregion
-
-function initMap() {
-    if (userLatitude != undefined && userLongitude != undefined) {
-        setTimeout(function () {
-            console.log("init map: " + userLatitude, userLongitude);
-            initMapLatLong = userLatitude, userLongitude;
-            var userLatLong = { lat: userLatitude, lng: userLongitude };
-            var zoom = 11;
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: zoom,
-                center: userLatLong
-            });
-            var marker = new google.maps.Marker({
-                position: userLatLong,
-                map: map,
-                title: "You are here"
-            });
-
-            infowindow = new google.maps.InfoWindow();
-            service = new google.maps.places.PlacesService(map);
-
-            service.findPlaceFromQuery(request, function (results, status) {
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    for (var i = 0; i < results.length; i++) {
-                        createMarker(results[i]);
-                    }
-                }
-            });
-
-            function createMarker(place) {
-                var marker = new google.maps.Marker({
-                    map: map,
-                    position: place.geometry.location,
-                    title: place.name
-                });
-
-                google.maps.event.addListener(marker, "click", function () {
-                    infowindow.setContent(place.name);
-                    infowindow.open(map, this);
-                });
-            }
-
-            let todaysDate = new Date().toLocaleDateString("en-US");
-            let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            database.ref(userCoordinatesPath).set({
-                dateTime: todaysDate + " " + currentTime,
-                currentLat: userLatitude,
-                currentLong: userLongitude,
-            });
-        }, 500);
-    };
-}
-
 $(document).ready(function () {
+    console.log("v1.385"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+
+    var map;
+    var userLatitude;
+    var userLongitude;
+    var initMapLatLong;
+    var gotRestaurantData = true;
+    var service;
+    var infowindow;
+    var request;
+    var movieTheaterNames;
+    var userIdentificationPath;
+    var userCoordinatesPath;
+    var userPreferencesPath;
+    var userRestaurantPath;
+    const moviesArray = [];
+
+    //#region - firebase authentication
+    var config = {
+        apiKey: "AIzaSyDJjHXFsfWA5UNS_7-aWWB0IUt7pTEXr7E",
+        authDomain: "dsm-group-project-1.firebaseapp.com",
+        databaseURL: "https://dsm-group-project-1.firebaseio.com",
+        projectId: "dsm-group-project-1",
+        storageBucket: "dsm-group-project-1.appspot.com",
+        messagingSenderId: "729543680357"
+    };
+    firebase.initializeApp(config);
+
+    var database = firebase.database();
+    var connectionsRef = database.ref("/connections");
+    var connectedRef = database.ref(".info/connected");
+    //#endregion
+
+    function initMap() {
+        if (userLatitude != undefined && userLongitude != undefined) {
+            setTimeout(function () {
+                console.log("init map: " + userLatitude, userLongitude);
+                initMapLatLong = userLatitude, userLongitude;
+                var userLatLong = { lat: userLatitude, lng: userLongitude };
+                var zoom = 11;
+                map = new google.maps.Map(document.getElementById("map"), {
+                    zoom: zoom,
+                    center: userLatLong
+                });
+                var marker = new google.maps.Marker({
+                    position: userLatLong,
+                    map: map,
+                    title: "You are here"
+                });
+
+                infowindow = new google.maps.InfoWindow();
+                service = new google.maps.places.PlacesService(map);
+
+                service.findPlaceFromQuery(request, function (results, status) {
+                    if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        for (var i = 0; i < results.length; i++) {
+                            createMarker(results[i]);
+                        }
+                    }
+                });
+
+                function createMarker(place) {
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        position: place.geometry.location,
+                        title: place.name
+                    });
+
+                    google.maps.event.addListener(marker, "click", function () {
+                        infowindow.setContent(place.name);
+                        infowindow.open(map, this);
+                    });
+                }
+
+                let todaysDate = new Date().toLocaleDateString("en-US");
+                let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                database.ref(userCoordinatesPath).set({
+                    dateTime: todaysDate + " " + currentTime,
+                    currentLat: userLatitude,
+                    currentLong: userLongitude,
+                });
+            }, 500);
+        };
+    }
+
+
     //#region - geolocation
     function getLocation() {
         if (navigator.geolocation) {
@@ -309,7 +310,7 @@ $(document).ready(function () {
         var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
         selectedRestLoc.lat = restaurantLat;
         selectedRestLoc.lng = restaurantLong;
-        moviesArray = moviesArray.push(getData(selectedRestLoc));
+        moviesArray.push(getData(selectedRestLoc));
         console.log(`this is the movie theatre array: ${moviesArray}`);
 
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
