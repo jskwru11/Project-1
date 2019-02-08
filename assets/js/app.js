@@ -1,4 +1,4 @@
-console.log("v1.479"); //this is updated so you can see when GitHub
+console.log("v1.412"); //this is updated so you can see when GitHub
 // has actually deployed your code.This is necessary for testing
 // stuff with CORS limitations(like Google Maps)
 
@@ -15,8 +15,8 @@ var userIdentificationPath;
 var userCoordinatesPath;
 var userPreferencesPath;
 var userRestaurantPath;
-let moviesArray = [];
 var rowHasBeenSelected = false;
+let moviesAPI;
 
 //#region - firebase authentication
 var config = {
@@ -204,12 +204,12 @@ $(document).ready(function () {
         var restaurantName = $(this).children(".restaurant-name").text();
         console.log("name: " + restaurantName);
         rowHasBeenSelected = true;
-        selectedRestLoc.lat = parseFloat(restaurantLatitude);
-        selectedRestLoc.lng = parseFloat(restaurantLongitude);
-        console.log(selectedRestLoc);
-        moviesArray = getData(selectedRestLoc);
-        console.log(moviesArray);
-        getLatLongFromVenueName(moviesArray);
+        selectedRestLoc.lat = restaurantLatitude;
+        selectedRestLoc.lng = restaurantLongitude;
+        // Call graceNote API to create theater names array
+        moviesAPI = getData(selectedRestLoc);
+        // pass array to google map function
+        moviesAPI.then(res => getLatLongFromVenueName(res));
         database.ref(userRestaurantPath).set({
             restaurantLat: restaurantLatitude,
             restaurantLong: restaurantLongitude,
@@ -281,22 +281,10 @@ $(document).ready(function () {
             var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
             var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
             var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
-            // selectedRestLoc.lat = restaurantLat;
-            // selectedRestLoc.lng = restaurantLong;
-
-            // console.log("selectedRestLoc on next line:");
-            // console.log(selectedRestLoc);
-            // moviesArray = getData(selectedRestLoc);
-            // console.log("moviesArray on next line:");
-            // console.log(moviesArray);
             console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
-            if (moviesArray.length > 0) {
-                getLatLongFromVenueName(moviesArray);
-            } else {
-                doMoviesFailsafe();
-            }
             rowHasBeenSelected = false;
         };
+
     });
     function doMoviesFailsafe() {
         console.log("doing movies failsafe");
@@ -366,16 +354,6 @@ $(document).ready(function () {
         placeMarker(0, "", "restaurant", venues);
     };
     //#endregion
-
-    // ---------------------------------------------------------------------------
-    // TODO: [ ]John/movies: Please make a function to get the movie theater
-    // name out of your API responses and make an array called movieTheaterNames
-    // with a list of the names formatted list this:
-    // movieTheaterNames = ["theater 1 name", "theater 2 name", "etc..."];
-    //
-    // then you just call getLatLongFromVenueName(movieTheaterNames) and I'll do
-    // the rest
-    // ---------------------------------------------------------------------------
 
     //#region - testing
     $(document).on("click", function (event) {
