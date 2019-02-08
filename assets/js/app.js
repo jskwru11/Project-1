@@ -1,4 +1,4 @@
-console.log("v1.375"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+console.log("v1.385"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 
 var map;
 var userLatitude;
@@ -107,6 +107,13 @@ $(document).ready(function () {
         }
     }
 
+    function redrawMapWithRestaurantPosition() {
+        if (initMapLatLong != userLatitude, userLongitude) {
+            console.log("redrawMapWithRestaurantPosition: " + initMapLatLong + " / " + userLatitude, userLongitude);
+            initMap();
+        }
+    }
+
     function getLatLongFromVenueName(movieTheaterNames) {
         console.log("movieTheaterNames array on next line...");
         console.log(movieTheaterNames);
@@ -187,8 +194,8 @@ $(document).ready(function () {
                 priceSelected.push(index + 1)
             }
         });
-        if(priceSelected.length === 0){
-            priceSelected = [1,2,3,4];
+        if (priceSelected.length === 0) {
+            priceSelected = [1, 2, 3, 4];
         }
         console.log("SELECTED PRICE", priceSelected);
         console.log("restaurant" + restaurantSelection);
@@ -215,6 +222,8 @@ $(document).ready(function () {
         var restaurantLatitude = $(this).attr("data-latitude");
         console.log("Longitude: " + restaurantLongitude);
         console.log("Latitude: " + restaurantLatitude);
+        initMapLatLong = restaurantLatitude, restaurantLongitude;
+        redrawMapWithRestaurantPosition();
         var restaurantPic = $(this).find(".restaurant-pic").prop("src");
         console.log("src: " + restaurantPic);
         var restaurantName = $(this).children(".restaurant-name").text();
