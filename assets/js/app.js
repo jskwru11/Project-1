@@ -312,6 +312,7 @@ $(document).ready(function () {
         console.log(`this is the movie theatre array: ${moviesArray}`);
 
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
+        getLatLongFromVenueName(moviesArray);
     });
     //#endregion
 
