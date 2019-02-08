@@ -1,4 +1,4 @@
-console.log("v1.400"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+console.log("v1.401"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 
 var map;
 var userLatitude;
@@ -220,6 +220,7 @@ $(document).ready(function () {
     });
     //on-click event for restaurant selection 
     $(document).on("click", ".restaurant-row", function () {
+        const selectedRestLoc = {};
         console.log("i've been clicked");
         var restaurantLongitude = $(this).attr("data-longitude");
         var restaurantLatitude = $(this).attr("data-latitude");
@@ -232,6 +233,12 @@ $(document).ready(function () {
         console.log("src: " + restaurantPic);
         var restaurantName = $(this).children(".restaurant-name").text();
         console.log("name: " + restaurantName);
+        selectedRestLoc.lat = restaurantLatitude;
+        selectedRestLoc.lng = restaurantLongitude;
+        console.log(selectedRestLoc);
+        moviesArray = getData(selectedRestLoc);
+        console.log(moviesArray);
+        getLatLongFromVenueName(moviesArray);
         database.ref(userRestaurantPath).set({
             restaurantLat: restaurantLatitude,
             restaurantLong: restaurantLongitude,
@@ -302,20 +309,20 @@ $(document).ready(function () {
     });
 
     database.ref(userRestaurantPath).on("value", function (snapshot) {
-        const selectedRestLoc = {};
+        // const selectedRestLoc = {};
         console.log("restaurant snapshot on next line...");
         console.log(snapshot.val());
         var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
         var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
         var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
-        selectedRestLoc.lat = restaurantLat;
-        selectedRestLoc.lng = restaurantLong;
+        // selectedRestLoc.lat = restaurantLat;
+        // selectedRestLoc.lng = restaurantLong;
         console.log(selectedRestLoc);
-        moviesArray = getData(selectedRestLoc);
+        // moviesArray = getData(selectedRestLoc);
         console.log(moviesArray);
 
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
-        getLatLongFromVenueName(moviesArray);
+        // getLatLongFromVenueName(moviesArray);
     });
     //#endregion
 
