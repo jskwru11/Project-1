@@ -1,8 +1,9 @@
 
-    const APIKEY = '7dadpsd62b4jwc7a92arb7fb';
+    const APIKEY = 'dp99ze7uepwt88ykbkfnpf4d';
+    // '2m5fs9kvktd48xcrz569rjkn' '7dadpsd62b4jwc7a92arb7fb'
 
 
-    let baseUrl = 'http://data.tmsapi.com/v1.1/movies/showings?';
+    let baseUrl = 'https://data.tmsapi.com/v1.1/movies/showings?';
     let dateNow = moment().format('YYYY-MM-DD');
     let restLocation = {lat: 35.851000, lng: -78.796130};
     let radius = 10;
@@ -13,33 +14,35 @@
         const date = startDate;
         const center = {...loc};
         const distance = radius;
-        return `${url}startDate=${date}&lat=${center.lat}&lng=${center.lng}&radius=${distance}&api_key=${APIKEY}`
+        console.log(`${url}startDate=${date}&lat=${center.lat}&lng=${center.lng}&radius=${distance}&api_key=${APIKEY}`);
+        return `${url}startDate=${date}&lat=${center.lat}&lng=${center.lng}&radius=${distance}&api_key=${APIKEY}`;
     }
     
     const getData = (loc) => {
         const theatreNames = [];
-        
-        $.get(encodeURL(dateNow, loc, radius)).then(res => {
-            console.log('api data fetched');
-            // console.log(res)
-            res.map(results => {
-                results.showtimes.map(theatre => {
-                    if (theatreNames.indexOf(theatre.theatre.name) === -1) {
-                        theatreNames.push(theatre.theatre.name)
-                    }
-                    
-                });
-                return theatreNames;
-            })
-        }).catch(error => {
-            console.log(`You have encountered an error: ${error}`)
-        })
-    };
-    
-    $('#clickMe').on('click', getData);
+        return new Promise((resolve, reject) => {
+              $.get(encodeURL(dateNow, loc, radius)).then(res => {
+             let data;
+             console.log('api data fetched');
+             data = res.map(data => data.showtimes);
+             data.forEach(results => {
+                 results.forEach(theatre => {
+                     if (theatreNames.indexOf(theatre.theatre.name) === -1)
+                     theatreNames.push(theatre.theatre.name);
+                 })
+             })
+             resolve(theatreNames);
+         })
+         .catch(error => {
+             reject(error);
+             console.log(`You have encountered an error: ${error}`)
+     });
+        });
+     };
 
-    const newDate = moment("2019-02-02T10:45").format('MMMM Do, YYYY hh:mm a');
-    console.log(newDate);
+        
+
+
 
 // user + uid + restaurants . restaurant.Lat, restaurant.Long
 

@@ -1,4 +1,4 @@
-console.log("v1.385"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+console.log("v1.412"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 
 var map;
 var userLatitude;
@@ -13,7 +13,8 @@ var userIdentificationPath;
 var userCoordinatesPath;
 var userPreferencesPath;
 var userRestaurantPath;
-const moviesArray = [];
+let moviesAPI;
+
 
 //#region - firebase authentication
 var config = {
@@ -102,9 +103,9 @@ $(document).ready(function () {
         }
     }
 
-    function redrawMapWithRestaurantPosition() {
-        if (initMapLatLong != userLatitude, userLongitude) {
-            console.log("redrawMapWithRestaurantPosition: " + initMapLatLong + " / " + userLatitude, userLongitude);
+    function redrawMapWithRestaurantPosition(theLatLong) {
+        if (theLatLong != userLatitude, userLongitude) {
+            console.log("redrawMapWithRestaurantPosition: " + theLatLong + " / " + userLatitude, userLongitude);
             initMap();
         }
     }
@@ -187,7 +188,7 @@ $(document).ready(function () {
         let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         currentTime = moment(currentTime, "hh:mm a").format("HH:mm");
         console.log("THIS IS THE CURRENT TIME", currentTime);
-        if(!selectedTime){
+        if (!selectedTime) {
             selectedTime = currentTime;
         }
         //check for price selection
@@ -219,17 +220,25 @@ $(document).ready(function () {
     });
     //on-click event for restaurant selection 
     $(document).on("click", ".restaurant-row", function () {
+        const selectedRestLoc = {};
         console.log("i've been clicked");
         var restaurantLongitude = $(this).attr("data-longitude");
         var restaurantLatitude = $(this).attr("data-latitude");
         console.log("Longitude: " + restaurantLongitude);
         console.log("Latitude: " + restaurantLatitude);
         initMapLatLong = restaurantLatitude, restaurantLongitude;
-        redrawMapWithRestaurantPosition();
+        restaurantMapLatLong = restaurantLatitude, restaurantLongitude;
+        redrawMapWithRestaurantPosition(restaurantMapLatLong);
         var restaurantPic = $(this).find(".restaurant-pic").prop("src");
         console.log("src: " + restaurantPic);
         var restaurantName = $(this).children(".restaurant-name").text();
         console.log("name: " + restaurantName);
+        selectedRestLoc.lat = restaurantLatitude;
+        selectedRestLoc.lng = restaurantLongitude;
+        // Call graceNote API to create theater names array
+        moviesAPI = getData(selectedRestLoc);
+        // pass array to google map function
+        moviesAPI.then(res => getLatLongFromVenueName(res));
         database.ref(userRestaurantPath).set({
             restaurantLat: restaurantLatitude,
             restaurantLong: restaurantLongitude,
@@ -300,18 +309,21 @@ $(document).ready(function () {
     });
 
     database.ref(userRestaurantPath).on("value", function (snapshot) {
-        const selectedRestLoc = {};
+        // const selectedRestLoc = {};
         console.log("restaurant snapshot on next line...");
         console.log(snapshot.val());
         var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
         var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
         var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
-        selectedRestLoc.lat = restaurantLat;
-        selectedRestLoc.lng = restaurantLong;
-        moviesArray=  moviesArray.push(getData(selectedRestLoc));
-        console.log(`this is the movie theatre array: ${moviesArray}`);
+        // selectedRestLoc.lat = restaurantLat;
+        // selectedRestLoc.lng = restaurantLong;
+        // console.log(selectedRestLoc);
+        // moviesArray = getData(selectedRestLoc);
+        // movieTheaterNames = getData(selectedRestLoc);
+        // console.log(movieTheaterNames);
 
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
+        // getLatLongFromVenueName(movieTheaterNames);
     });
     //#endregion
 
