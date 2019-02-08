@@ -315,7 +315,7 @@ $(document).ready(function () {
         console.log(moviesArray);
 
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
-        // getLatLongFromVenueName(moviesArray);
+        getLatLongFromVenueName(moviesArray);
     });
     //#endregion
 
