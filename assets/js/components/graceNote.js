@@ -2,10 +2,6 @@
 const APIKEY = 'dp99ze7uepwt88ykbkfnpf4d';
 // '2m5fs9kvktd48xcrz569rjkn' '7dadpsd62b4jwc7a92arb7fb'
 
-let baseUrl = 'https://data.tmsapi.com/v1.1/movies/showings?';
-let dateNow = moment().format('YYYY-MM-DD');
-let restLocation = { lat: 35.851000, lng: -78.796130 };
-let radius = 10;
 
 let baseUrl = 'https://data.tmsapi.com/v1.1/movies/showings?';
 let dateNow = moment().format('YYYY-MM-DD');
@@ -43,6 +39,7 @@ const getData = (loc) => {
             });
     });
 };
+
 
 
 

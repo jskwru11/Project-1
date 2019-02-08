@@ -196,8 +196,8 @@ $(document).ready(function () {
         var restaurantLatitude = $(this).attr("data-latitude");
         console.log("Longitude: " + restaurantLongitude);
         console.log("Latitude: " + restaurantLatitude);
-        userLatitude = parseFloat(restaurantLatitude);
-        userLongitude = parseFloat(restaurantLongitude);
+        initMapLatLong = restaurantLatitude, restaurantLongitude;
+        restaurantMapLatLong = restaurantLatitude, restaurantLongitude;
         initMap();
         var restaurantPic = $(this).find(".restaurant-pic").prop("src");
         console.log("src: " + restaurantPic);
@@ -275,25 +275,16 @@ $(document).ready(function () {
     });
 
     database.ref(userRestaurantPath).on("value", function (snapshot) {
-        // const selectedRestLoc = {};
-        if (rowHasBeenSelected) {
-            console.log("restaurant snapshot on next line...");
-            console.log(snapshot.val());
-            var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
-            var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
-            var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
-            // selectedRestLoc.lat = restaurantLat;
-            // selectedRestLoc.lng = restaurantLong;
-            // console.log(selectedRestLoc);
-            // moviesArray = getData(selectedRestLoc);
-            // movieTheaterNames = getData(selectedRestLoc);
-            // console.log(movieTheaterNames);
+        console.log("restaurant snapshot on next line...");
+        console.log(snapshot.val());
+        var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
+        var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
+        var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
 
-            console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
-            // getLatLongFromVenueName(movieTheaterNames);
-            rowHasBeenSelected = false;
-        };
+        console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
+        rowHasBeenSelected = false;
     });
+
     function doMoviesFailsafe() {
         console.log("doing movies failsafe");
         // this is a fail-safe in case moviesArray above is empty.
@@ -304,7 +295,8 @@ $(document).ready(function () {
         setTimeout(function () {
             getLatLongFromVenueName(moviesArray);
         }, 500);
-    }
+    };
+
     //#endregion
 
     //#region - yelp
@@ -369,7 +361,7 @@ $(document).ready(function () {
             switch ($("#testing-wrapper").css("display")) {
                 case "none":
                     $("#testing-wrapper").css("display", "block");
-                    $("#testing-input").val("Park West, Regal Cinemas Crossroads 20 & IMAX, AMC DINE-IN Holly Springs, CinéBistro, Frank Theatres CineBowl & Grille, AMC Park Place, The Cary Theater, Regal Cinemas Beaver Creek, AMC Theater, Carmike Cinemas, Cinemark Raleigh Grande, Regal Cinemas Brier Creek, AMC Southpoint, AMC CLASSIC Blueridge, Mission Valley Cinema, Imax, Silverspot Cinema, Regal Cinemas North Hills, AMC CLASSIC Durham, Lumina Theatre, Chelsea Theater, Silverspot Cinema, Varsity Theatre, AMC Southpoint 17, Regal Cinemas Timberlyne 6, AMC CLASSIC Durham 15, Regal Cinemas Beaver Creek 12, Frank Theatres CineBowl & Grille, Imax, AMC Park Place 16, AMC DINE-IN Holly Springs 9, Park West 14, Regal Cinemas Brier Creek 14, Carmike Cinemas, Northgate Stadium 10, Cinemark Raleigh Grande, Phoenix Theatres 10, The Cary Theater, Historic Playmakers Theatre, Full Frame Theater, Regal Cinemas Crossroads 20 & IMAX, AMC Theater, The Carolina Theatre, CinéBistro, Shadowbox Studio, Regal Cinemas North Hills 14, AMC CLASSIC Blueridge 14, Frank Theatres Spring Lane Stadium 10");
+                    $("#testing-input").val("Lumina Theatre, Chelsea Theater, Silverspot Cinema, Varsity Theatre, AMC Southpoint 17, Regal Cinemas Timberlyne 6, AMC CLASSIC Durham 15, Regal Cinemas Beaver Creek 12, Frank Theatres CineBowl & Grille, Imax, AMC Park Place 16, AMC DINE-IN Holly Springs 9, Park West 14, Regal Cinemas Brier Creek 14, Carmike Cinemas, Northgate Stadium 10, Cinemark Raleigh Grande, Phoenix Theatres 10, The Cary Theater, Historic Playmakers Theatre, Full Frame Theater, Regal Cinemas Crossroads 20 & IMAX, AMC Theater, The Carolina Theatre, CinéBistro, Shadowbox Studio, Regal Cinemas North Hills 14, AMC CLASSIC Blueridge 14, Frank Theatres Spring Lane Stadium 10");
                     break;
                 case "block":
                     $("#testing-wrapper").css("display", "none");
@@ -409,7 +401,7 @@ $(document).ready(function () {
         console.log("function will turn the comma-separated names into an array matching");
         console.log("the format of movieTheaterNames and then submit it to getLatLongFromVenueName.");
         console.log("Here is some sample data you can cut and paste:");
-        console.log("Park West, Regal Cinemas Crossroads 20 & IMAX, AMC DINE-IN Holly Springs, CinéBistro, Frank Theatres CineBowl & Grille, AMC Park Place, The Cary Theater, Regal Cinemas Beaver Creek, AMC Theater, Carmike Cinemas, Cinemark Raleigh Grande, Regal Cinemas Brier Creek, AMC Southpoint, AMC CLASSIC Blueridge, Mission Valley Cinema, Imax, Silverspot Cinema, Regal Cinemas North Hills, AMC CLASSIC Durham");
+        console.log("Lumina Theatre, Chelsea Theater, Silverspot Cinema, Varsity Theatre, AMC Southpoint 17, Regal Cinemas Timberlyne 6, AMC CLASSIC Durham 15, Regal Cinemas Beaver Creek 12, Frank Theatres CineBowl & Grille, Imax, AMC Park Place 16, AMC DINE-IN Holly Springs 9, Park West 14, Regal Cinemas Brier Creek 14, Carmike Cinemas, Northgate Stadium 10, Cinemark Raleigh Grande, Phoenix Theatres 10, The Cary Theater, Historic Playmakers Theatre, Full Frame Theater, Regal Cinemas Crossroads 20 & IMAX, AMC Theater, The Carolina Theatre, CinéBistro, Shadowbox Studio, Regal Cinemas North Hills 14, AMC CLASSIC Blueridge 14, Frank Theatres Spring Lane Stadium 10");
         var theString = $("#testing-input").val();
         testVarThree = Array.from((theString.split(", ")));
         console.log("the array going to getLatLongFromVenueNames: " + testVarThree);

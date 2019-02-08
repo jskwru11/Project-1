@@ -8,18 +8,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/5.8.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/5.8.2/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/5.8.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.8.1/firebase.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
     <script src="assets/js/components/graceNote.js"></script>
     <script src="assets/js/app.js"></script>
-    <link rel="stylesheet" href="assets/css/style.css">
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPchfMQ9Do2TWSFQTKjKJlitT5y_Fdrdc&libraries=places&callback=initMap">
         </script>
-    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <style>
         /* Always set the map height explicitly to define the size of the div
            * element that contains the map. */
@@ -103,6 +101,7 @@
                                             data-offstyle="default">
                                     </label>
                                 </div>
+
                             </div>
                             <div class="form-group row">
                                 <div class="col-sm-10 offset-sm-2">
@@ -136,13 +135,23 @@
             <div class="col-md-7">
                 <div id="map"></div>
             </div>
+            <div id="testing-wrapper" class="testing">
+                <div id="testing-buttons" class="testing"><button id="test-1" type="button"
+                        class="test-button">[unused]</button><button id="test-2" type="button"
+                        class="test-button">[unused]</button><button id="test-3" type="button" class="test-button">do
+                        getLatLongFromVenueName</button></div>
+                <textarea id="testing-input" class="testing"></textarea>
+                <div id="testing-display" class="testing"></div>
+            </div>
         </div>
     </div>
     <div id="testing-wrapper" class="testing">
-        <div id="testing-buttons" class="testing"><button id="test-1" type="button" class="test-button">do
-                initMap</button><button id="test-2" type="button" class="test-button">[unused]</button><button
-                id="test-3" type="button" class="test-button">do
-                getLatLongFromVenueName with string input below</button></div>
+
+        <div id="testing-buttons" class="testing"><button id="test-1" type="button"
+                class="test-button">initMap</button><button id="test-2" type="button"
+                class="test-button">[unused]</button><button id="test-3" type="button" class="test-button">do
+
+                getLatLongFromVenueName</button></div>
         <textarea id="testing-input" class="testing"></textarea>
         <div id="testing-display" class="testing"></div>
     </div>
