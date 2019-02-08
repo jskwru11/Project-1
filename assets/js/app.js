@@ -220,7 +220,6 @@ $(document).ready(function () {
             restaurantImg: restaurantPic,
             name: restaurantName
         });
-        $(this).addClass("selected-restaurant")
         $(".restaurant-row").not($(this)).remove();
     });
     //#endregion
