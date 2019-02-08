@@ -1,5 +1,6 @@
 
-    const APIKEY = '7dadpsd62b4jwc7a92arb7fb';
+    const APIKEY = '2m5fs9kvktd48xcrz569rjkn';
+    // '2m5fs9kvktd48xcrz569rjkn' '7dadpsd62b4jwc7a92arb7fb'
 
 
     let baseUrl = 'https://data.tmsapi.com/v1.1/movies/showings?';
