@@ -1,4 +1,4 @@
-console.log("v1.375"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+console.log("v1.385"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 
 var map;
 var userLatitude;
@@ -49,6 +49,7 @@ function initMap() {
 
             infowindow = new google.maps.InfoWindow();
             service = new google.maps.places.PlacesService(map);
+
             service.findPlaceFromQuery(request, function (results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     for (var i = 0; i < results.length; i++) {
@@ -100,6 +101,13 @@ $(document).ready(function () {
         }
     }
 
+    function redrawMapWithRestaurantPosition() {
+        if (initMapLatLong != userLatitude, userLongitude) {
+            console.log("redrawMapWithRestaurantPosition: " + initMapLatLong + " / " + userLatitude, userLongitude);
+            initMap();
+        }
+    }
+
     function getLatLongFromVenueName(movieTheaterNames) {
         console.log("movieTheaterNames array on next line...");
         console.log(movieTheaterNames);
@@ -140,9 +148,7 @@ $(document).ready(function () {
     //#endregion
 
     //#region - markers
-
     function placeMarker(theLatLong, title, restaurantOrMovie, venues) {
-
         if (restaurantOrMovie = "restaurant") {
             var icon = "https://maps.gstatic.com/mapfiles/ms2/micons/yellow.png";
         } else {
@@ -182,8 +188,8 @@ $(document).ready(function () {
                 priceSelected.push(index + 1)
             }
         });
-        if(priceSelected.length === 0){
-            priceSelected = [1,2,3,4];
+        if (priceSelected.length === 0) {
+            priceSelected = [1, 2, 3, 4];
         }
         console.log("SELECTED PRICE", priceSelected);
         console.log("restaurant" + restaurantSelection);
@@ -210,6 +216,8 @@ $(document).ready(function () {
         var restaurantLatitude = $(this).attr("data-latitude");
         console.log("Longitude: " + restaurantLongitude);
         console.log("Latitude: " + restaurantLatitude);
+        initMapLatLong = restaurantLatitude, restaurantLongitude;
+        redrawMapWithRestaurantPosition();
         var restaurantPic = $(this).find(".restaurant-pic").prop("src");
         console.log("src: " + restaurantPic);
         var restaurantName = $(this).children(".restaurant-name").text();
@@ -220,6 +228,8 @@ $(document).ready(function () {
             restaurantImg: restaurantPic,
             name: restaurantName
         });
+        $(this).addClass("selected-restaurant")
+        $(".restaurant-row").not($(this)).remove();
     });
     //#endregion
 
@@ -288,6 +298,7 @@ $(document).ready(function () {
         var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
         var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
         var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
+
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
     });
     //#endregion
