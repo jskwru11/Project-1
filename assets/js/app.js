@@ -1,4 +1,4 @@
-console.log("v1.402"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+console.log("v1.410"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 
 var map;
 var userLatitude;
@@ -13,7 +13,7 @@ var userIdentificationPath;
 var userCoordinatesPath;
 var userPreferencesPath;
 var userRestaurantPath;
-let moviesArray;
+const theatreNames = [];
 
 
 //#region - firebase authentication
@@ -235,10 +235,10 @@ $(document).ready(function () {
         console.log("name: " + restaurantName);
         selectedRestLoc.lat = restaurantLatitude;
         selectedRestLoc.lng = restaurantLongitude;
-        console.log(selectedRestLoc);
-        moviesArray = getData(selectedRestLoc);
-        console.log(moviesArray);
-        getLatLongFromVenueName(moviesArray);
+        // Call graceNote API to create theater names array
+        getData(selectedRestLoc);
+        // pass array to google map function
+        getLatLongFromVenueName(theatreNames);
         database.ref(userRestaurantPath).set({
             restaurantLat: restaurantLatitude,
             restaurantLong: restaurantLongitude,
@@ -319,10 +319,11 @@ $(document).ready(function () {
         // selectedRestLoc.lng = restaurantLong;
         // console.log(selectedRestLoc);
         // moviesArray = getData(selectedRestLoc);
-        // console.log(moviesArray);
+        // movieTheaterNames = getData(selectedRestLoc);
+        // console.log(movieTheaterNames);
 
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
-        // getLatLongFromVenueName(moviesArray);
+        // getLatLongFromVenueName(movieTheaterNames);
     });
     //#endregion
 
