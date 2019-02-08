@@ -13,7 +13,8 @@ var userIdentificationPath;
 var userCoordinatesPath;
 var userPreferencesPath;
 var userRestaurantPath;
-const moviesArray = [];
+let moviesArray;
+
 
 //#region - firebase authentication
 var config = {
@@ -309,11 +310,12 @@ $(document).ready(function () {
         var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
         selectedRestLoc.lat = restaurantLat;
         selectedRestLoc.lng = restaurantLong;
-        moviesArray = moviesArray.push(getData(selectedRestLoc));
-        console.log(`this is the movie theatre array: ${moviesArray}`);
+        console.log(selectedRestLoc);
+        moviesArray = getData(selectedRestLoc);
+        console.log(moviesArray);
 
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
-        getLatLongFromVenueName(moviesArray);
+        // getLatLongFromVenueName(moviesArray);
     });
     //#endregion
 
