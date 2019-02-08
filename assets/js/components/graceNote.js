@@ -1,5 +1,5 @@
 
-    const APIKEY = '2m5fs9kvktd48xcrz569rjkn';
+    const APIKEY = 'dp99ze7uepwt88ykbkfnpf4d';
     // '2m5fs9kvktd48xcrz569rjkn' '7dadpsd62b4jwc7a92arb7fb'
 
 
@@ -14,11 +14,11 @@
         const date = startDate;
         const center = {...loc};
         const distance = radius;
-        return `${url}startDate=${date}&lat=${center.lat}&lng=${center.lng}&radius=${distance}&api_key=${APIKEY}`
+        console.log(`${url}startDate=${date}&lat=${center.lat}&lng=${center.lng}&radius=${distance}&api_key=${APIKEY}`);
+        return `${url}startDate=${date}&lat=${center.lat}&lng=${center.lng}&radius=${distance}&api_key=${APIKEY}`;
     }
     
     const getData = (loc) => {
-        const theatreNames = [];
         $.get(encodeURL(dateNow, loc, radius)).then(res => {
             let data;
             console.log('api data fetched');
@@ -33,8 +33,8 @@
             .catch(error => {
             console.log(`You have encountered an error: ${error}`)
         });
-        return theatreNames;
 }
+
         
 
 
