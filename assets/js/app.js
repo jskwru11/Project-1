@@ -176,6 +176,14 @@ $(document).ready(function () {
         //get current parameters
         var restaurantSelection = $("#inputFood").val().trim();
         var selectedTime = $("#inputTime").val().trim();
+        //set to currentTime if no time Selected
+        let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        currentTime = moment(currentTime, "hh:mm a").format("HH:mm");
+        console.log("THIS IS THE CURRENT TIME", currentTime);
+        if(!selectedTime){
+            selectedTime = currentTime;
+        }
+        //check for price selection
         var priceSelected = []
         $(".toggle").each(function (index) {
             if ($(this).hasClass("btn-success")) {
