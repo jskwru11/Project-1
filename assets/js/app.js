@@ -102,9 +102,9 @@ $(document).ready(function () {
         }
     }
 
-    function redrawMapWithRestaurantPosition() {
-        if (initMapLatLong != userLatitude, userLongitude) {
-            console.log("redrawMapWithRestaurantPosition: " + initMapLatLong + " / " + userLatitude, userLongitude);
+    function redrawMapWithRestaurantPosition(theLatLong) {
+        if (theLatLong != userLatitude, userLongitude) {
+            console.log("redrawMapWithRestaurantPosition: " + theLatLong + " / " + userLatitude, userLongitude);
             initMap();
         }
     }
@@ -187,7 +187,7 @@ $(document).ready(function () {
         let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         currentTime = moment(currentTime, "hh:mm a").format("HH:mm");
         console.log("THIS IS THE CURRENT TIME", currentTime);
-        if(!selectedTime){
+        if (!selectedTime) {
             selectedTime = currentTime;
         }
         //check for price selection
@@ -225,7 +225,8 @@ $(document).ready(function () {
         console.log("Longitude: " + restaurantLongitude);
         console.log("Latitude: " + restaurantLatitude);
         initMapLatLong = restaurantLatitude, restaurantLongitude;
-        redrawMapWithRestaurantPosition();
+        restaurantMapLatLong = restaurantLatitude, restaurantLongitude;
+        redrawMapWithRestaurantPosition(restaurantMapLatLong);
         var restaurantPic = $(this).find(".restaurant-pic").prop("src");
         console.log("src: " + restaurantPic);
         var restaurantName = $(this).children(".restaurant-name").text();
@@ -308,7 +309,7 @@ $(document).ready(function () {
         var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
         selectedRestLoc.lat = restaurantLat;
         selectedRestLoc.lng = restaurantLong;
-        moviesArray=  moviesArray.push(getData(selectedRestLoc));
+        moviesArray = moviesArray.push(getData(selectedRestLoc));
         console.log(`this is the movie theatre array: ${moviesArray}`);
 
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
