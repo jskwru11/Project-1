@@ -32,6 +32,9 @@ h1 {
     height: 20px;
 }
 
+#restaurant-table {
+    cursor: pointer;
+}
 .restaurant-name {
     text-align: left;
     white-space: nowrap; 
