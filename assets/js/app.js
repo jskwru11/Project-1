@@ -1,4 +1,4 @@
-console.log("v1.401"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+console.log("v1.402"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 
 var map;
 var userLatitude;
@@ -317,9 +317,9 @@ $(document).ready(function () {
         var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
         // selectedRestLoc.lat = restaurantLat;
         // selectedRestLoc.lng = restaurantLong;
-        console.log(selectedRestLoc);
+        // console.log(selectedRestLoc);
         // moviesArray = getData(selectedRestLoc);
-        console.log(moviesArray);
+        // console.log(moviesArray);
 
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
         // getLatLongFromVenueName(moviesArray);
