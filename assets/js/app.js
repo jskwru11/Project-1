@@ -1,4 +1,4 @@
-console.log("v1.385"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+console.log("v1.3977"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
 
 var map;
 var userLatitude;
@@ -13,7 +13,7 @@ var userIdentificationPath;
 var userCoordinatesPath;
 var userPreferencesPath;
 var userRestaurantPath;
-const moviesArray = [];
+var moviesArray = [];
 
 //#region - firebase authentication
 var config = {
@@ -47,31 +47,6 @@ function initMap() {
                 map: map,
                 title: "You are here"
             });
-
-            infowindow = new google.maps.InfoWindow();
-            service = new google.maps.places.PlacesService(map);
-
-            service.findPlaceFromQuery(request, function (results, status) {
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    for (var i = 0; i < results.length; i++) {
-                        createMarker(results[i]);
-                    }
-                }
-            });
-
-            function createMarker(place) {
-                var marker = new google.maps.Marker({
-                    map: map,
-                    position: place.geometry.location,
-                    title: place.name
-                });
-
-                google.maps.event.addListener(marker, "click", function () {
-                    infowindow.setContent(place.name);
-                    infowindow.open(map, this);
-                });
-            }
-
             let todaysDate = new Date().toLocaleDateString("en-US");
             let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             database.ref(userCoordinatesPath).set({
@@ -98,13 +73,6 @@ $(document).ready(function () {
         userLongitude = parseFloat(position.coords.longitude);
         if (initMapLatLong != userLatitude, userLongitude) {
             console.log("redoing initMap: " + initMapLatLong + " / " + userLatitude, userLongitude);
-            initMap();
-        }
-    }
-
-    function redrawMapWithRestaurantPosition(theLatLong) {
-        if (theLatLong != userLatitude, userLongitude) {
-            console.log("redrawMapWithRestaurantPosition: " + theLatLong + " / " + userLatitude, userLongitude);
             initMap();
         }
     }
@@ -224,9 +192,9 @@ $(document).ready(function () {
         var restaurantLatitude = $(this).attr("data-latitude");
         console.log("Longitude: " + restaurantLongitude);
         console.log("Latitude: " + restaurantLatitude);
-        initMapLatLong = restaurantLatitude, restaurantLongitude;
-        restaurantMapLatLong = restaurantLatitude, restaurantLongitude;
-        redrawMapWithRestaurantPosition(restaurantMapLatLong);
+        userLatitude = parseFloat(restaurantLatitude);
+        userLongitude = parseFloat(restaurantLongitude);
+        initMap();
         var restaurantPic = $(this).find(".restaurant-pic").prop("src");
         console.log("src: " + restaurantPic);
         var restaurantName = $(this).children(".restaurant-name").text();
@@ -238,6 +206,14 @@ $(document).ready(function () {
             name: restaurantName
         });
         $(".restaurant-row").not($(this)).remove();
+        // the following three lines give us basic movie theater location results for
+        // the area around Morrisville, NC.This is a temporary measure until graceNote
+        // is fully incorporated.
+        theString = "Park West, Regal Cinemas Crossroads 20 & IMAX, AMC DINE-IN Holly Springs, CinéBistro, Frank Theatres CineBowl & Grille, AMC Park Place, The Cary Theater, Regal Cinemas Beaver Creek, AMC Theater, Carmike Cinemas, Cinemark Raleigh Grande, Regal Cinemas Brier Creek, AMC Southpoint, AMC CLASSIC Blueridge, Mission Valley Cinema, Imax, Silverspot Cinema, Regal Cinemas North Hills, AMC CLASSIC Durham, Lumina Theatre, Chelsea Theater, Silverspot Cinema, Varsity Theatre, AMC Southpoint 17, Regal Cinemas Timberlyne 6, AMC CLASSIC Durham 15, Regal Cinemas Beaver Creek 12, Frank Theatres CineBowl & Grille, Imax, AMC Park Place 16, AMC DINE-IN Holly Springs 9, Park West 14, Regal Cinemas Brier Creek 14, Carmike Cinemas, Northgate Stadium 10, Cinemark Raleigh Grande, Phoenix Theatres 10, The Cary Theater, Historic Playmakers Theatre, Full Frame Theater, Regal Cinemas Crossroads 20 & IMAX, AMC Theater, The Carolina Theatre, CinéBistro, Shadowbox Studio, Regal Cinemas North Hills 14, AMC CLASSIC Blueridge 14, Frank Theatres Spring Lane Stadium 10";
+        moviesArray = Array.from((theString.split(", ")))
+        setTimeout(function () {
+            getLatLongFromVenueName(moviesArray);
+        }, 500);
     });
     //#endregion
 
@@ -249,15 +225,10 @@ $(document).ready(function () {
         };
     });
 
-    // connectionsRef.on("value", function (connectionsSnapshot) {
-    //     console.log("number online: " + connectionsSnapshot.numChildren());
-    // }); // Number of online users is the number of objects in the presence list.
-
     firebase.auth().signInAnonymously().catch(function (error) {
         let errorCode = error.code;
         let errorMessage = error.message;
         console.log("anonymous login error: " + errorCode, errorMessage);
-        // ...
     });
 
     firebase.auth().onAuthStateChanged(function (user) {
@@ -309,24 +280,14 @@ $(document).ready(function () {
         var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
         selectedRestLoc.lat = restaurantLat;
         selectedRestLoc.lng = restaurantLong;
-        moviesArray = moviesArray.push(getData(selectedRestLoc));
-        console.log(`this is the movie theatre array: ${moviesArray}`);
-
+        // moviesArray = moviesArray.push(getData(selectedRestLoc));
+        // console.log(`this is the movie theatre array: ${moviesArray}`);
         console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
         getLatLongFromVenueName(moviesArray);
     });
     //#endregion
 
     //#region - yelp
-
-    // theLatLong is an object formatted like this: { lat: userLatitude, lng: userLongitude }
-    // title is a string consisting of the venue name
-    // NOTE: title is NOT NEEDED when placing multiple markers, but YOU MUST put "" in its place
-    // values for restaurantOrMovie are "restaurant" or "movie"
-    // values for singleOrMultiple are "single" or "multiple" (markers to place)
-    // NOTE: when placing multiple markers, you must populate the array named "venues"
-    // see bottom of this javascript file for a description of that array
-
     function yelpAPICall(restaurantType, requestedTime, priceRange) {
         console.log("yelpAPICall user latLong on next line...");
         console.log(userLatitude + userLongitude);
@@ -397,7 +358,7 @@ $(document).ready(function () {
             switch ($("#testing-wrapper").css("display")) {
                 case "none":
                     $("#testing-wrapper").css("display", "block");
-                    $("#testing-input").val("Lumina Theatre, Chelsea Theater, Silverspot Cinema, Varsity Theatre, AMC Southpoint 17, Regal Cinemas Timberlyne 6, AMC CLASSIC Durham 15, Regal Cinemas Beaver Creek 12, Frank Theatres CineBowl & Grille, Imax, AMC Park Place 16, AMC DINE-IN Holly Springs 9, Park West 14, Regal Cinemas Brier Creek 14, Carmike Cinemas, Northgate Stadium 10, Cinemark Raleigh Grande, Phoenix Theatres 10, The Cary Theater, Historic Playmakers Theatre, Full Frame Theater, Regal Cinemas Crossroads 20 & IMAX, AMC Theater, The Carolina Theatre, CinéBistro, Shadowbox Studio, Regal Cinemas North Hills 14, AMC CLASSIC Blueridge 14, Frank Theatres Spring Lane Stadium 10");
+                    $("#testing-input").val("Park West, Regal Cinemas Crossroads 20 & IMAX, AMC DINE-IN Holly Springs, CinéBistro, Frank Theatres CineBowl & Grille, AMC Park Place, The Cary Theater, Regal Cinemas Beaver Creek, AMC Theater, Carmike Cinemas, Cinemark Raleigh Grande, Regal Cinemas Brier Creek, AMC Southpoint, AMC CLASSIC Blueridge, Mission Valley Cinema, Imax, Silverspot Cinema, Regal Cinemas North Hills, AMC CLASSIC Durham, Lumina Theatre, Chelsea Theater, Silverspot Cinema, Varsity Theatre, AMC Southpoint 17, Regal Cinemas Timberlyne 6, AMC CLASSIC Durham 15, Regal Cinemas Beaver Creek 12, Frank Theatres CineBowl & Grille, Imax, AMC Park Place 16, AMC DINE-IN Holly Springs 9, Park West 14, Regal Cinemas Brier Creek 14, Carmike Cinemas, Northgate Stadium 10, Cinemark Raleigh Grande, Phoenix Theatres 10, The Cary Theater, Historic Playmakers Theatre, Full Frame Theater, Regal Cinemas Crossroads 20 & IMAX, AMC Theater, The Carolina Theatre, CinéBistro, Shadowbox Studio, Regal Cinemas North Hills 14, AMC CLASSIC Blueridge 14, Frank Theatres Spring Lane Stadium 10");
                     break;
                 case "block":
                     $("#testing-wrapper").css("display", "none");
@@ -437,7 +398,7 @@ $(document).ready(function () {
         console.log("function will turn the comma-separated names into an array matching");
         console.log("the format of movieTheaterNames and then submit it to getLatLongFromVenueName.");
         console.log("Here is some sample data you can cut and paste:");
-        console.log("Lumina Theatre, Chelsea Theater, Silverspot Cinema, Varsity Theatre, AMC Southpoint 17, Regal Cinemas Timberlyne 6, AMC CLASSIC Durham 15, Regal Cinemas Beaver Creek 12, Frank Theatres CineBowl & Grille, Imax, AMC Park Place 16, AMC DINE-IN Holly Springs 9, Park West 14, Regal Cinemas Brier Creek 14, Carmike Cinemas, Northgate Stadium 10, Cinemark Raleigh Grande, Phoenix Theatres 10, The Cary Theater, Historic Playmakers Theatre, Full Frame Theater, Regal Cinemas Crossroads 20 & IMAX, AMC Theater, The Carolina Theatre, CinéBistro, Shadowbox Studio, Regal Cinemas North Hills 14, AMC CLASSIC Blueridge 14, Frank Theatres Spring Lane Stadium 10");
+        console.log("Park West, Regal Cinemas Crossroads 20 & IMAX, AMC DINE-IN Holly Springs, CinéBistro, Frank Theatres CineBowl & Grille, AMC Park Place, The Cary Theater, Regal Cinemas Beaver Creek, AMC Theater, Carmike Cinemas, Cinemark Raleigh Grande, Regal Cinemas Brier Creek, AMC Southpoint, AMC CLASSIC Blueridge, Mission Valley Cinema, Imax, Silverspot Cinema, Regal Cinemas North Hills, AMC CLASSIC Durham");
         var theString = $("#testing-input").val();
         testVarThree = Array.from((theString.split(", ")));
         console.log("the array going to getLatLongFromVenueNames: " + testVarThree);
