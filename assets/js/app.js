@@ -48,12 +48,6 @@ function initMap() {
             });
 
             infowindow = new google.maps.InfoWindow();
-
-            // request = {
-            //     query: "Zen Motorcycle Maintenance",
-            //     fields: ["name", "geometry"],
-            // };
-
             service = new google.maps.places.PlacesService(map);
 
             service.findPlaceFromQuery(request, function (results, status) {
