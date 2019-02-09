@@ -1,4 +1,7 @@
+
 console.log("v1.420"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+
+
 
 var map;
 var userLatitude;
@@ -13,6 +16,7 @@ var userIdentificationPath;
 var userCoordinatesPath;
 var userPreferencesPath;
 var userRestaurantPath;
+var rowHasBeenSelected = false;
 let moviesAPI;
 
 
@@ -48,31 +52,6 @@ function initMap() {
                 map: map,
                 title: "You are here"
             });
-
-            infowindow = new google.maps.InfoWindow();
-            service = new google.maps.places.PlacesService(map);
-
-            service.findPlaceFromQuery(request, function (results, status) {
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    for (var i = 0; i < results.length; i++) {
-                        createMarker(results[i]);
-                    }
-                }
-            });
-
-            function createMarker(place) {
-                var marker = new google.maps.Marker({
-                    map: map,
-                    position: place.geometry.location,
-                    title: place.name
-                });
-
-                google.maps.event.addListener(marker, "click", function () {
-                    infowindow.setContent(place.name);
-                    infowindow.open(map, this);
-                });
-            }
-
             let todaysDate = new Date().toLocaleDateString("en-US");
             let currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             database.ref(userCoordinatesPath).set({
@@ -99,13 +78,6 @@ $(document).ready(function () {
         userLongitude = parseFloat(position.coords.longitude);
         if (initMapLatLong != userLatitude, userLongitude) {
             console.log("redoing initMap: " + initMapLatLong + " / " + userLatitude, userLongitude);
-            initMap();
-        }
-    }
-
-    function redrawMapWithRestaurantPosition(theLatLong) {
-        if (theLatLong != userLatitude, userLongitude) {
-            console.log("redrawMapWithRestaurantPosition: " + theLatLong + " / " + userLatitude, userLongitude);
             initMap();
         }
     }
@@ -180,7 +152,7 @@ $(document).ready(function () {
         event.preventDefault();
         gotRestaurantData = false;
         //clear previous results
-        $("#restaurant-table").empty();
+        $("#restaurant-table").html("<em><strong>Loading restaurant data...</strong></em>");
         //get current parameters
         var restaurantSelection = $("#inputFood").val().trim();
         var selectedTime = $("#inputTime").val().trim();
@@ -228,11 +200,14 @@ $(document).ready(function () {
         console.log("Latitude: " + restaurantLatitude);
         initMapLatLong = restaurantLatitude, restaurantLongitude;
         restaurantMapLatLong = restaurantLatitude, restaurantLongitude;
-        redrawMapWithRestaurantPosition(restaurantMapLatLong);
+        userLatitude = parseFloat(restaurantLatitude);
+        userLongitude = parseFloat(restaurantLongitude);
+        initMap();
         var restaurantPic = $(this).find(".restaurant-pic").prop("src");
         console.log("src: " + restaurantPic);
         var restaurantName = $(this).children(".restaurant-name").text();
         console.log("name: " + restaurantName);
+        rowHasBeenSelected = true;
         selectedRestLoc.lat = restaurantLatitude;
         selectedRestLoc.lng = restaurantLongitude;
         // Call graceNote API to create theater names array
@@ -257,22 +232,16 @@ $(document).ready(function () {
         };
     });
 
-    // connectionsRef.on("value", function (connectionsSnapshot) {
-    //     console.log("number online: " + connectionsSnapshot.numChildren());
-    // }); // Number of online users is the number of objects in the presence list.
-
     firebase.auth().signInAnonymously().catch(function (error) {
         let errorCode = error.code;
         let errorMessage = error.message;
         console.log("anonymous login error: " + errorCode, errorMessage);
-        // ...
     });
 
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             console.log("auth state changed: " + user.uid);
             userID = user.uid;
-            // User is signed in.
             userSignedIn = true;
             userIdentificationPath = "users/" + userID + "/identification";
             userCoordinatesPath = "users/" + userID + "/coordinates";
@@ -309,34 +278,28 @@ $(document).ready(function () {
     });
 
     database.ref(userRestaurantPath).on("value", function (snapshot) {
-        // const selectedRestLoc = {};
-        console.log("restaurant snapshot on next line...");
-        console.log(snapshot.val());
-        var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
-        var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
-        var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
-        // selectedRestLoc.lat = restaurantLat;
-        // selectedRestLoc.lng = restaurantLong;
-        // console.log(selectedRestLoc);
-        // moviesArray = getData(selectedRestLoc);
-        // movieTheaterNames = getData(selectedRestLoc);
-        // console.log(movieTheaterNames);
+        if (rowHasBeenSelected) {
+            // const selectedRestLoc = {};
+            console.log("restaurant snapshot on next line...");
+            console.log(snapshot.val());
+            var restaurantName = snapshot.child(userRestaurantPath + "/name").val();
+            var restaurantLat = snapshot.child(userRestaurantPath + "/restaurantLat").val();
+            var restaurantLong = snapshot.child(userRestaurantPath + "/restaurantLong").val();
+            // selectedRestLoc.lat = restaurantLat;
+            // selectedRestLoc.lng = restaurantLong;
+            // console.log(selectedRestLoc);
+            // moviesArray = getData(selectedRestLoc);
+            // movieTheaterNames = getData(selectedRestLoc);
+            // console.log(movieTheaterNames);
 
-        console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
-        // getLatLongFromVenueName(movieTheaterNames);
+            console.log("RESTAURANT INFO name" + restaurantName + " lat: " + restaurantLat + "long: " + restaurantLong);
+            // getLatLongFromVenueName(movieTheaterNames);
+            rowHasBeenSelected = false;
+        };
     });
     //#endregion
 
     //#region - yelp
-
-    // theLatLong is an object formatted like this: { lat: userLatitude, lng: userLongitude }
-    // title is a string consisting of the venue name
-    // NOTE: title is NOT NEEDED when placing multiple markers, but YOU MUST put "" in its place
-    // values for restaurantOrMovie are "restaurant" or "movie"
-    // values for singleOrMultiple are "single" or "multiple" (markers to place)
-    // NOTE: when placing multiple markers, you must populate the array named "venues"
-    // see bottom of this javascript file for a description of that array
-
     function yelpAPICall(restaurantType, requestedTime, priceRange) {
         console.log("yelpAPICall user latLong on next line...");
         console.log(userLatitude + userLongitude);
@@ -354,6 +317,7 @@ $(document).ready(function () {
             console.log(response);
             console.log(response.businesses)
             gotRestaurantData = true;
+            $("#restaurant-table").empty();
             if (response.businesses.length < 1) {
                 var alertDiv = $("<div>").text("There are no restaurants matching that request. Bummer. Try another!");
                 $("#restaurant-table").append(alertDiv);
@@ -390,16 +354,6 @@ $(document).ready(function () {
         placeMarker(0, "", "restaurant", venues);
     };
     //#endregion
-
-    // ---------------------------------------------------------------------------
-    // TODO: [ ]John/movies: Please make a function to get the movie theater
-    // name out of your API responses and make an array called movieTheaterNames
-    // with a list of the names formatted list this:
-    // movieTheaterNames = ["theater 1 name", "theater 2 name", "etc..."];
-    //
-    // then you just call getLatLongFromVenueName(movieTheaterNames) and I'll do
-    // the rest
-    // ---------------------------------------------------------------------------
 
     //#region - testing
     $(document).on("click", function (event) {
