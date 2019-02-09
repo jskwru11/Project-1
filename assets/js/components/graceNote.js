@@ -40,6 +40,31 @@
         });
      };
 
+
+     const grabShowtimes = (loc) => {
+        const theatreData = {};
+        const movieNames = {};
+        return new Promise((resolve, reject) => {
+              $.get(encodeURL(dateNow, loc, radius)).then(res => {
+             let data;
+             console.log('api data fetched');
+             res.map(data => {
+                 movieNames[data.title] = [];
+                 data.showtimes.forEach(movie => {
+                     movieNames[data.title].push(moment(movie.dateTime).format('MMMM Do, YYYY hh:mm a'));
+                     theatreData[movie.theatre.name] = movieNames;
+                     
+                 });
+            })
+             resolve(theatreData);
+         })
+         .catch(error => {
+             reject(error);
+             console.log(`You have encountered an error: ${error}`)
+     });
+        });
+    };
+
         
 
 
