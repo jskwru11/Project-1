@@ -35,7 +35,7 @@ h1 {
 #restaurant-table {
     cursor: pointer;
 }
-.restaurant-name {
+.restaurant-name, .theater-name, .movie-title, .movie-times {
     text-align: left;
     white-space: nowrap; 
     overflow: hidden;
@@ -71,4 +71,9 @@ h1 {
 
 .map-wrapper {
     height: 400px;
+}
+.selected-theater {
+    text-align: center;
+    font-weight: bold;
+
 }

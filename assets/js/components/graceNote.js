@@ -1,5 +1,5 @@
 
-    const APIKEY = 'cf36ya2yf3yn6kxnxprmrfbm';
+    const APIKEY = 'dp99ze7uepwt88ykbkfnpf4d';
     // '2m5fs9kvktd48xcrz569rjkn' '7dadpsd62b4jwc7a92arb7fb'
 
 
@@ -14,62 +14,59 @@
         const date = startDate;
         const center = {...loc};
         const distance = radius;
-        return `${url}startDate=${date}&lat=${center.lat}&lng=${center.lng}&radius=${distance}&api_key=${APIKEY}`
+        console.log(`${url}startDate=${date}&lat=${center.lat}&lng=${center.lng}&radius=${distance}&api_key=${APIKEY}`);
+        return `${url}startDate=${date}&lat=${center.lat}&lng=${center.lng}&radius=${distance}&api_key=${APIKEY}`;
     }
     
     const getData = (loc) => {
         const theatreNames = [];
-        var res;
-        $.get(encodeURL(dateNow, loc, radius)).then(res => {
-            
-            let data;
-            console.log('api data fetched');
-            console.log("OJBECT FROM API CALL", res);
-           
-            data = res.map(data => data.showtimes);
-            data.forEach(results => {
-                results.forEach(theatre => {
-                    if (theatreNames.indexOf(theatre.theatre.name) === -1)
-                    theatreNames.push(theatre.theatre.name);
-                    })
-                })
-                sortObject(res, theatreNames);
-            })
-            .catch(error => {
-            console.log(`You have encountered an error: ${error}`)
+        return new Promise((resolve, reject) => {
+              $.get(encodeURL(dateNow, loc, radius)).then(res => {
+             let data;
+             console.log('api data fetched');
+             data = res.map(data => data.showtimes);
+             data.forEach(results => {
+                 results.forEach(theatre => {
+                     if (theatreNames.indexOf(theatre.theatre.name) === -1)
+                     theatreNames.push(theatre.theatre.name);
+                 })
+             })
+             resolve(theatreNames);
+         })
+         .catch(error => {
+             reject(error);
+             console.log(`You have encountered an error: ${error}`)
+     });
         });
-        
-        return theatreNames;
-        
-}
+     };
+
+
+     const grabShowtimes = (loc) => {
+        const theatreData = {};
+        const movieNames = {};
+        return new Promise((resolve, reject) => {
+              $.get(encodeURL(dateNow, loc, radius)).then(res => {
+             let data;
+             console.log('api data fetched');
+             res.map(data => {
+                 movieNames[data.title] = [];
+                 data.showtimes.forEach(movie => {
+                     movieNames[data.title].push(moment(movie.dateTime).format('hh:mm a'));
+                     theatreData[movie.theatre.name] = movieNames;
+                     
+                 });
+            })
+             resolve(theatreData);
+         })
+         .catch(error => {
+             reject(error);
+             console.log(`You have encountered an error: ${error}`)
+     });
+        });
+    };
+
         
 
-// function sortObject (res, theatreNames){
-//   console.log("OBJECT FROM SORTOBJECT", res);
-//   console.log("THEATERS FROM SORTOBJECT", theatreNames);
-
-//   // sort through res by theater names 
-// for( var i = 0; i < theatreNames.length; i++){
-//     for(var j = 0; j < res.length; j++){
-//         for (var x = 0; x < res[j].showtimes.length; x++){
-           
-//             if(res[j].showtimes[x].theatre.name === theatreNames[i]){
-//                 console.log("THEATER NAME", res[j].showtimes[x].theatre.name);
-//                 console.log("THEATER NAME", theatreNames[i])
-//         //         var movieTitles = [];
-//         //         movieTitles.push(res[j].title)
-//         //         movieInfo = {
-//         //         time: res[j].showtimes[x].dateTime
-//         // }
-//         var obj ={
-//             theater: 'name',
-//             movie: [{movie:'spider',time:['']}
-//         }
-//     }
-//     }
-//     }
-// }
-// }
 
 // user + uid + restaurants . restaurant.Lat, restaurant.Long
 
