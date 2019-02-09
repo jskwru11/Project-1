@@ -1,6 +1,7 @@
-console.log("v1.415"); //this is updated so you can see when
-// GitHub has actually deployed your code.This is necessary
-// for testing stuff with CORS limitations(like Google Maps)
+
+console.log("v1.420"); //this is updated so you can see when GitHub has actually deployed your code. This is necessary for testing stuff with CORS limitations (like Google Maps)
+
+
 
 var map;
 var userLatitude;
