@@ -18,6 +18,8 @@ var userPreferencesPath;
 var userRestaurantPath;
 var rowHasBeenSelected = false;
 let moviesAPI;
+let movieShowtimeData;
+var movieObject;
 
 
 //#region - firebase authentication
@@ -153,6 +155,7 @@ $(document).ready(function () {
         gotRestaurantData = false;
         //clear previous results
         $("#restaurant-table").html("<em><strong>Loading restaurant data...</strong></em>");
+        $("#movie-table").empty();
         //get current parameters
         var restaurantSelection = $("#inputFood").val().trim();
         var selectedTime = $("#inputTime").val().trim();
@@ -212,8 +215,10 @@ $(document).ready(function () {
         selectedRestLoc.lng = restaurantLongitude;
         // Call graceNote API to create theater names array
         moviesAPI = getData(selectedRestLoc);
+        movieShowtimeData = grabShowtimes(selectedRestLoc);
         // pass array to google map function
         moviesAPI.then(res => getLatLongFromVenueName(res));
+        movieShowtimeData.then(res => addMovies(res));
         database.ref(userRestaurantPath).set({
             restaurantLat: restaurantLatitude,
             restaurantLong: restaurantLongitude,
@@ -221,6 +226,26 @@ $(document).ready(function () {
             name: restaurantName
         });
         $(".restaurant-row").not($(this)).remove();
+    });
+
+    $(document).on("click", ".movie-row", function (){
+        $(".movie-row").not($(this)).remove();
+        var theaterName = $(this).text();
+        $(this).addClass("selected-theater");
+        var movieNames = Object.keys(movieObject[theaterName]);
+        console.log("ARRAY OF MOVIE NAMES", movieNames);
+        for(var i = 0; i < movieNames.length; i++){
+            var movie = movieNames[i];
+            var movieTimes = movieObject[theaterName][movie]
+            var newRow = $("<tr>");
+            newRow.addClass("movie-row");
+            var nameColumn = $("<td>").text(movie);
+            nameColumn.addClass("movie-title");
+            var timesColumn = $("<td>").text(movieTimes);
+            timesColumn.addClass('movie-times');
+            newRow.append(nameColumn, timesColumn);
+            $("#movie-table").append(newRow);
+        }
     });
     //#endregion
 
@@ -353,6 +378,32 @@ $(document).ready(function () {
         // placeMarker({ lat: 35.83, lng: -79.11 }, "", "restaurant", venues);
         placeMarker(0, "", "restaurant", venues);
     };
+
+    function addMovies(movieTimes){
+        // var selectedRestaurantHeader = $("<th>");
+        // var headerText = $("<td>").text("Your Restaurant Selection");
+        // selectedRestaurantHeader.addClass("selection-row");
+        // headerText.addClass("selection-column");
+        // selectedRestaurantHeader.append(headerText);
+        // $("#restaurant-table").prepend(selectedRestaurantHeader);
+        console.log("MOVIE SHOWTIME OBJ", movieTimes);
+        var theaters = Object.keys(movieTimes);
+        var headerRow = $("<th>");
+        headerRow.addClass("movie-row")
+        var headerCol = $("<td>").text("Theaters Near Your Restaurant");
+        headerRow.append(headerCol)
+        $("#movie-table").append(headerRow);
+        for(var i = 0; i < theaters.length; i++){
+            var newRow = $("<tr>");
+            newRow.addClass("movie-row");
+            var nameColumn = $("<td>").text(theaters[i]);
+            nameColumn.addClass("theater-name");
+            newRow.append(nameColumn);
+            $("#movie-table").append(newRow);
+        }
+        movieObject = movieTimes;
+        console.log("GLOBAL MOVIE DATA OBJECT", movieObject);
+    }
     //#endregion
 
     //#region - testing

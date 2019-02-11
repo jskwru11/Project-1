@@ -7,7 +7,7 @@
     let dateNow = moment().format('YYYY-MM-DD');
     let restLocation = {lat: 35.851000, lng: -78.796130};
     let radius = 10;
-    
+   
     
     const encodeURL = (startDate, loc, radius) => {
         const url = baseUrl;
@@ -51,7 +51,7 @@
              res.map(data => {
                  movieNames[data.title] = [];
                  data.showtimes.forEach(movie => {
-                     movieNames[data.title].push(moment(movie.dateTime).format('MMMM Do, YYYY hh:mm a'));
+                     movieNames[data.title].push(moment(movie.dateTime).format('hh:mm a'));
                      theatreData[movie.theatre.name] = movieNames;
                      
                  });
@@ -66,7 +66,6 @@
     };
 
         
-
 
 
 // user + uid + restaurants . restaurant.Lat, restaurant.Long
